@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Events;
+
+use App\Models\Event;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
+
+class NotificationEvent implements ShouldBroadcast
+{
+    use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    /**
+     * Create a new event instance.
+     */
+    public function __construct(
+        public Event $event
+    ) { }
+
+    /**
+     * Get the channels the event should broadcast on.
+     *
+     * @return array<int, \Illuminate\Broadcasting\Channel>
+     */
+    public function broadcastOn(): array
+    {
+        return ['channel-notifications'];
+    }
+
+    /**
+     * The function broadcastAs() returns the name 'new-notification' for broadcasting purposes.
+     * 
+     * @return The function `broadcastAs()` is returning the string 'new-notification'.
+     */
+    public function broadcastAs() : string
+    {
+        return 'new-notification-event';
+    }
+}
