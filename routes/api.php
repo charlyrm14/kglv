@@ -13,11 +13,12 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix('v1/')->group(function () {
 
+    Route::post('login', [AuthController::class, 'login']);
+
     Route::prefix('auth/')->controller(AuthController::class)->group(function () {
-        Route::post('login', 'login');
         Route::get('user', 'getUserInfo');
         Route::post('logout', 'logout');
-    });
+    })->middleware('jwt.verify');
 
     Route::prefix('users/')->controller(UserController::class)->group(function () {
         Route::post('', 'create');
