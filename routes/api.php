@@ -26,6 +26,7 @@ Route::prefix('v1/')->group(function () {
     });
 
     Route::prefix('events/')->controller(EventController::class)->group(function() {
+        Route::get('', 'index');
         Route::post('', 'create');
     });
 });
