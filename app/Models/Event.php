@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;
 
 class Event extends Model
 {
@@ -43,5 +44,20 @@ class Event extends Model
 
             $event->save();
         });
+    }
+
+    
+    /**
+     * The scopeId function filters a query by the specified id value.
+     * 
+     * @param Builder query The `` parameter is an instance of the
+     * `Illuminate\Database\Eloquent\Builder` class, which is used for building database queries in
+     * Laravel's Eloquent ORM.
+     * @param int id The `id` parameter is an integer value that is used to filter the query results
+     * based on the specified ID.
+     */
+    public function scopeId(Builder $query, int $id): void
+    {
+        $query->where('id', $id);
     }
 }
