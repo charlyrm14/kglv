@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\NotificationEvent;
 use App\Models\Event;
 use App\Http\Requests\StoreEventRequest;
+use App\Resources\EventResource;
 use Illuminate\Http\JsonResponse;
 
 class EventController extends Controller
@@ -69,27 +70,27 @@ class EventController extends Controller
         ], 201);
     }
 
+    
     /**
-     * This PHP function retrieves an event by its ID and returns a JSON response with the event data
-     * or appropriate error messages.
+     * The function retrieves and displays event details based on a given slug in PHP, handling errors
+     * appropriately.
      * 
-     * @param int id The `show` function you provided is a method that retrieves an event based on the
-     * given `id` parameter and returns a JSON response. If the event is found, it returns a success
-     * response with the event data. If the event is not found, it returns a 404 response indicating
-     * that the
+     * @param string slug The `show` function you provided is a controller method that retrieves an
+     * event based on the provided slug and returns a JSON response. The `slug` parameter is a string
+     * that is used to identify the specific event to be shown.
      * 
-     * @return JsonResponse A JSON response is being returned. If the event with the specified ID is
-     * found, a success message along with the event data will be returned with a status code of 200.
-     * If the event is not found, a message indicating that the resource was not found will be returned
-     * with a status code of 404. If an exception occurs during the process, an error message will be
-     * returned with a status
+     * @return JsonResponse If the event with the provided slug is found, a JSON response with a
+     * success message and the data of the event in the EventResource format will be returned with a
+     * status code of 200. If the event is not found, a JSON response with a message indicating the
+     * resource was not found and a status code of 404 will be returned. If an exception occurs during
+     * the process, a JSON response
      */
     public function show(string $slug) : JsonResponse
     {
         try {
 
             $event = Event::slug($slug)->first();
-
+            
             if(!$event) return response()->json(['message' => 'Recurso no encontrado'], 404);
 
         } catch (\Exception $e) {
@@ -99,7 +100,7 @@ class EventController extends Controller
 
         return response()->json([
             'message' => 'success',
-            'data' => $event
+            'data' => new EventResource($event)
         ], 200);
     }
 }
