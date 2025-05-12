@@ -28,7 +28,7 @@ Route::prefix('v1/')->group(function () {
     Route::prefix('events/')->controller(EventController::class)->group(function() {
         Route::get('', 'index');
         Route::post('', 'create');
-        Route::get('{id}/detail', 'show');
+        Route::get('{slug}/detail', 'show');
     });
 });
 
