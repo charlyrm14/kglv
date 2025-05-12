@@ -76,4 +76,20 @@ class Event extends Model
     {
         $query->where('slug', $slug);
     }
+
+    /**
+     * The scopeRecommendedEvents function filters out events with a specific ID and returns a maximum
+     * of 3 recommended events.
+     * 
+     * @param Builder query The `` parameter in the `scopeRecommendedEvents` function is an
+     * instance of the Laravel query builder (`Illuminate\Database\Eloquent\Builder`). This parameter
+     * is used to build and modify database queries for retrieving data from the database.
+     * @param int id The `id` parameter in the `scopeRecommendedEvents` function is the ID of the event
+     * for which you want to find recommended events. This function is a query scope that filters out
+     * the event with the given ID and returns a maximum of 3 recommended events.
+     */
+    public function scopeRecommendedEvents(Builder $query, int $id): void
+    {
+        $query->select('id', 'title', 'short_description', 'slug')->whereNotIn('id', [$id])->take(3);
+    }
 }
