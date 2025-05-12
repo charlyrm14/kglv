@@ -60,4 +60,20 @@ class Event extends Model
     {
         $query->where('id', $id);
     }
+
+    /**
+     * The scopeSlug function filters a query based on a specified slug value.
+     * 
+     * @param Builder query The `` parameter is an instance of the
+     * `Illuminate\Database\Eloquent\Builder` class, which represents a query builder for a specific
+     * Eloquent model. It allows you to construct and execute queries against the model's database
+     * table.
+     * @param string slug The `slug` parameter is a string that is used to filter the query results
+     * based on the value of the `slug` column in the database table. The `scopeSlug` function is a
+     * query scope that can be used to add a condition to the query to filter records where the `slug`
+     */
+    public function scopeSlug(Builder $query, string $slug): void
+    {
+        $query->where('slug', $slug);
+    }
 }

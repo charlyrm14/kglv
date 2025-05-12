@@ -84,11 +84,11 @@ class EventController extends Controller
      * with a status code of 404. If an exception occurs during the process, an error message will be
      * returned with a status
      */
-    public function show(int $id) : JsonResponse
+    public function show(string $slug) : JsonResponse
     {
         try {
 
-            $event = Event::Id($id)->first();
+            $event = Event::slug($slug)->first();
 
             if(!$event) return response()->json(['message' => 'Recurso no encontrado'], 404);
 
