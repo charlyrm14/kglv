@@ -5,7 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     AuthController,
     UserController,
-    EventController
+    EventController,
+    SwimmingCategoryController
 };
 
 Route::get('/user', function (Request $request) {
@@ -29,6 +30,12 @@ Route::prefix('v1/')->group(function () {
         Route::get('', 'index');
         Route::post('', 'create');
         Route::get('{slug}/detail', 'show');
+    });
+
+    Route::prefix('swimming-categories/')->controller(SwimmingCategoryController::class)->group(function() {
+        Route::get('', 'index');
+        Route::get('by-user/{user_id}', 'byUser');
+        Route::post('assign-to-user', 'assignToUser');
     });
 });
 
