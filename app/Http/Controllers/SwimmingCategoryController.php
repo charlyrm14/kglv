@@ -65,7 +65,8 @@ class SwimmingCategoryController extends Controller
 
             $current_category = [
                 'category' => optional($data_current_category)->title,
-                'message_category' => optional($data_current_category)->message
+                'message' => optional($data_current_category)->message,
+                'image' => optional($data_current_category)->image
             ];
 
         } catch (\Exception $e) {
