@@ -61,13 +61,23 @@ class SwimmingCategoryController extends Controller
                 $value->category = SwimmingCategory::categoryById($value->swimming_category_id)->first()?->title;
             });
 
+            $data_current_category = SwimmingCategory::categoryById($user_categories->max('swimming_category_id'))->first();
+
+            $current_category = [
+                'category' => optional($data_current_category)->title,
+                'message_category' => optional($data_current_category)->message
+            ];
+
         } catch (\Exception $e) {
 
             return response()->json(["error" => 'Error del servidor'], 500);
         }
 
         return response()->json([
-            'data' => $user_categories
+            'data' => [
+                'current_category' => $current_category,
+                'categories' => $user_categories
+            ]
         ], 200); 
     }
 
