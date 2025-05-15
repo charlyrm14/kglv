@@ -6,7 +6,8 @@ use App\Http\Controllers\{
     AuthController,
     UserController,
     EventController,
-    SwimmingCategoryController
+    SwimmingCategoryController,
+    UserClassController
 };
 
 Route::get('/user', function (Request $request) {
@@ -37,5 +38,11 @@ Route::prefix('v1/')->group(function () {
         Route::get('by-user/{user_id}', 'byUser');
         Route::post('assign-to-user', 'assignToUser');
     });
+
+    Route::prefix('classes/')->controller(UserClassController::class)->group(function() {
+        Route::get('{user_id}', 'classesByUser');
+        Route::post('', 'assignClassesToUser');
+    });
+
 });
 
