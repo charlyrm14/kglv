@@ -34,10 +34,9 @@ class EventResource extends JsonResource
             'slug' => $this->slug,
             'start_hour' => Carbon::parse($this->start_date)->format('H:i'),
             'end_hour' => Carbon::parse($this->end_date)->format('H:i'),
-            'start_date' => Carbon::parse($this->start_date)->format('Y-m-d'),
-            'end_date' => Carbon::parse($this->end_date)->format('Y-m-d'),
-            'created_at' => Carbon::parse($this->created_date)->format('Y-m-d'),
-            'other_events' => Event::recommendedEvents($this->id)->get()
+            'start_date' => $this->start_date,
+            'end_date' => $this->end_date,
+            'created_at' => Carbon::parse($this->created_date)->format('Y-m-d')
         ];
     }
 }
