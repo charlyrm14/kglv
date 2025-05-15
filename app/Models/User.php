@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -106,5 +107,20 @@ class User extends Authenticatable implements JWTSubject
     public function role(): BelongsTo
     {
         return $this->belongsTo(Role::class);
+    }
+
+    /**
+     * The scopeById function filters a query by a specific user ID.
+     * 
+     * @param Builder query The `` parameter is an instance of the
+     * `Illuminate\Database\Eloquent\Builder` class, which is used for building database queries in
+     * Laravel's Eloquent ORM.
+     * @param int user_id The `user_id` parameter is an integer value that represents the unique
+     * identifier of a user. In the provided code snippet, this parameter is used to filter the query
+     * results based on the `id` column matching the specified `user_id`.
+     */
+    public function scopeById(Builder $query, int $user_id): void
+    {
+        $query->where('id', $user_id);
     }
 }
