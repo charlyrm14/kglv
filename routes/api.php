@@ -7,7 +7,8 @@ use App\Http\Controllers\{
     UserController,
     EventController,
     SwimmingCategoryController,
-    UserClassController
+    UserClassController,
+    IAController
 };
 
 Route::get('/user', function (Request $request) {
@@ -42,6 +43,10 @@ Route::prefix('v1/')->group(function () {
     Route::prefix('classes/')->controller(UserClassController::class)->group(function() {
         Route::get('{user_id}', 'classesByUser');
         Route::post('', 'assignClassesToUser');
+    });
+
+    Route::prefix('ia/')->controller(IAController::class)->group(function() {
+        Route::post('chat', 'chatIA');
     });
 
 });
