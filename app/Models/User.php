@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -107,6 +108,22 @@ class User extends Authenticatable implements JWTSubject
     public function role(): BelongsTo
     {
         return $this->belongsTo(Role::class);
+    }
+
+    /**
+     * The `biography` function returns a `HasOne` relationship with the `UserBiography` model.
+     * 
+     * @return HasOne An instance of the `HasOne` relationship with the `UserBiography` model is being
+     * returned.
+     */
+    public function biography() : HasOne
+    {
+        return $this->hasOne(UserBiography::class);
+    }
+
+    public function featured() : HasOne
+    {
+        return $this->hasOne(FeaturedUser::class);
     }
 
     /**

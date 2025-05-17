@@ -49,7 +49,7 @@ class SwimmingCategorySeeder extends Seeder
             'title' => 'Tiburón'
         ], [
             'title' => 'Tiburón',
-            'image' => 'uploads/swimming-categories/tiburon.png',
+            'image' => 'uploads/swimming-categories/shark.png',
             'message' => '¡Eres un tiburón en la piscina! Has llegado al nivel más alto y tu esfuerzo es evidente. Sigue entrenando con pasión, ahora eres un ejemplo para otros nadadores. ¡Orgullo total!'
         ]);
     }
