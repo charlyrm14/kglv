@@ -39,7 +39,7 @@ class APIService {
 
         $body = $response->collect($key = null);
 
-        $content = $body['choices'][0]['message']['content'] ?? 'Estamos en mantenimiento intentalo de nuevo más tarde';
+        $content = $body['choices'][0]['message']['content'] ?? null;
 
         return $content;
     } 

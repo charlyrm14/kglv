@@ -46,6 +46,7 @@ Route::prefix('v1/')->group(function () {
     });
 
     Route::prefix('ia/')->controller(IAController::class)->group(function() {
+        Route::get('chat/history/{user_id}', 'conversationByUser');
         Route::post('chat', 'chatIA');
     });
 

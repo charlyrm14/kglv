@@ -24,7 +24,7 @@ class ChatIARequest extends FormRequest
     public function rules(): array
     {
         return [
-            'question' => 'required',
+            'message' => 'required',
             'user_id' => 'required|integer'
         ];
     }
