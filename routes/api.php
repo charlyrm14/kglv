@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     AuthController,
+    InfoController,
     UserController,
     EventController,
     SwimmingCategoryController,
@@ -23,6 +24,10 @@ Route::prefix('v1/')->group(function () {
         Route::get('user', 'getUserInfo');
         Route::post('logout', 'logout');
     })->middleware('jwt.verify');
+
+    Route::prefix('info/')->controller(InfoController::class)->group(function () {
+        Route::get('{user_id}', 'appInfo');
+    });
 
     Route::prefix('users/')->controller(UserController::class)->group(function () {
         Route::post('', 'create');
