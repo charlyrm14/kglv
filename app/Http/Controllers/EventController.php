@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\NotificationEvent;
-use App\Models\Event;
+use App\Events\NotificationNewContent;
+use App\Models\Content;
 use App\Http\Requests\StoreEventRequest;
 use App\Resources\EventResource;
 use Illuminate\Http\JsonResponse;
 
 class EventController extends Controller
 {
+    private $content_category_id = 2;
+
     /**
      * The function retrieves events ordered by start date and returns them as JSON response, handling
      * potential errors along the way.
@@ -24,9 +26,9 @@ class EventController extends Controller
     {
         try {
             
-            $events = Event::orderByDesc('start_date')->get();
+            $events = Content::getContentType($this->content_category_id);
 
-            if($events->isEmpty()) return response()->json(["message" => 'No se encontraron resultados'], 404);
+            if($events->isEmpty()) return response()->json(['message' => 'No se encontraron resultados'], 404);
 
         } catch (\Exception $e) {
 
@@ -55,9 +57,10 @@ class EventController extends Controller
     {
         try {
 
-            $event = Event::create($request->validated());
+            $data = $request->validated() + ['content_category_id' => 2];
+            $event = Content::create($data);
 
-            NotificationEvent::dispatch($event);
+            if($event->active == 1) NotificationNewContent::dispatch($event);
 
         } catch (\Exception $e) {
 
@@ -68,39 +71,5 @@ class EventController extends Controller
             'message' => 'Evento creado con éxito',
             'data' => $event
         ], 201);
-    }
-
-    
-    /**
-     * The function retrieves and displays event details based on a given slug in PHP, handling errors
-     * appropriately.
-     * 
-     * @param string slug The `show` function you provided is a controller method that retrieves an
-     * event based on the provided slug and returns a JSON response. The `slug` parameter is a string
-     * that is used to identify the specific event to be shown.
-     * 
-     * @return JsonResponse If the event with the provided slug is found, a JSON response with a
-     * success message and the data of the event in the EventResource format will be returned with a
-     * status code of 200. If the event is not found, a JSON response with a message indicating the
-     * resource was not found and a status code of 404 will be returned. If an exception occurs during
-     * the process, a JSON response
-     */
-    public function show(string $slug) : JsonResponse
-    {
-        try {
-
-            $event = Event::slug($slug)->first();
-            
-            if(!$event) return response()->json(['message' => 'Recurso no encontrado'], 404);
-
-        } catch (\Exception $e) {
-            
-            return response()->json(["error" => 'Error del servidor'], 500);
-        }
-
-        return response()->json([
-            'message' => 'success',
-            'data' => new EventResource($event)
-        ], 200);
     }
 }

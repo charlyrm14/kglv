@@ -140,4 +140,29 @@ class User extends Authenticatable implements JWTSubject
     {
         $query->where('id', $user_id);
     }
+
+    /**
+     * This PHP function retrieves users' information based on their birthdate matching the current
+     * month and day.
+     * 
+     * @return The `usersBirthdate` function is returning a collection of users who have their birthday
+     * on the current day. The function selects the `id`, `name`, `last_name`, and `mothers_name`
+     * columns from the database table. It then filters the results based on the month and day of the
+     * `birth_date` column matching the current month and day. Finally, it retrieves the filtered
+     * results
+     */
+    public static function usersBirthdate()
+    {
+        $today = now();
+
+        return static::select(
+            'id',
+            'name',
+            'last_name',
+            'mothers_name',
+            'birth_date'
+        )
+        ->whereRaw('MONTH(birth_date) = ? AND DAY(birth_date) = ?', [$today->month, $today->day])
+        ->get();
+    }
 }

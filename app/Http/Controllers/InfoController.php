@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Resources\InfoResource;
-use App\Services\DateService;
 use Illuminate\Http\JsonResponse;
 
 class InfoController extends Controller
