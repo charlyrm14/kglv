@@ -18,7 +18,7 @@ class DateService {
      * returns a boolean value indicating whether the provided birthdate matches today's date in terms
      * of the day and month.
      */
-    public static function isBirthdateUser(string $birthdate)
+    public static function isBirthdateUser(string $birthdate = '1990-01-01')
     {
         $today = Carbon::today();
         $format_birthdate = Carbon::parse($birthdate);
@@ -37,7 +37,7 @@ class DateService {
      * age of the user based on the given birthdate and the current date (2025-05-20), and returns the
      * age as an integer.
      */
-    public static function userAge(string $birthdate)
+    public static function userAge(string $birthdate = '1990-01-01')
     {
         $today = Carbon::today();
         $format_birthdate = Carbon::parse($birthdate);

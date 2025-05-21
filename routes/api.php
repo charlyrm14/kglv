@@ -6,7 +6,9 @@ use App\Http\Controllers\{
     AuthController,
     InfoController,
     UserController,
+    ContentController,
     EventController,
+    NoticeController,
     SwimmingCategoryController,
     UserClassController,
     IAController
@@ -33,11 +35,20 @@ Route::prefix('v1/')->group(function () {
         Route::post('', 'create');
     });
 
-    Route::prefix('events/')->controller(EventController::class)->group(function() {
-        Route::get('', 'index');
-        Route::post('', 'create');
-        Route::get('{slug}/detail', 'show');
+    Route::prefix('content/')->group(function() {
+
+        Route::prefix('events/')->controller(EventController::class)->group(function() {
+            Route::get('', 'index');
+            Route::post('', 'create');
+            
+        });
+
+        Route::prefix('notice/')->controller(NoticeController::class)->group(function() {
+        });
+
+        Route::get('{slug}/detail', [ContentController::class, 'show']);
     });
+
 
     Route::prefix('swimming-categories/')->controller(SwimmingCategoryController::class)->group(function() {
         Route::get('', 'index');

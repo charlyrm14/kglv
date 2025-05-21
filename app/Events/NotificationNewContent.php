@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\Event;
+use App\Models\Content;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -11,7 +11,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class NotificationEvent implements ShouldBroadcast
+class NotificationNewContent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -19,7 +19,7 @@ class NotificationEvent implements ShouldBroadcast
      * Create a new event instance.
      */
     public function __construct(
-        public Event $event
+        public Content $content
     ) { }
 
     /**
@@ -39,6 +39,6 @@ class NotificationEvent implements ShouldBroadcast
      */
     public function broadcastAs() : string
     {
-        return 'new-notification-event';
+        return 'new-notification-content';
     }
 }

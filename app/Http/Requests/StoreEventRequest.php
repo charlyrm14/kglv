@@ -26,14 +26,16 @@ class StoreEventRequest extends FormRequest
     {
         return [
             'title' => 'required|min:5|max:120',
-            'short_description' => 'required|min:10|max:120',
             'content' => 'required',
+            'cover_image' => 'nullable',
+            'location' => 'required|string|min:10|max:120',
             'start_date' => [
                 'required',
                 'date_format:Y-m-d H:i',
                 Rule::date()->after(today()->addDays(1))
             ],
-            'end_date' => 'required|date_format:Y-m-d H:i|after:start_date'
+            'end_date' => 'required|date_format:Y-m-d H:i|after:start_date',
+            'active' => 'nullable|in:0,1'
         ];
     }
 

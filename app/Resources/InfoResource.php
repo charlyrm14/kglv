@@ -2,26 +2,38 @@
 
 namespace App\Resources;
 
-use App\Models\Event;
+use App\Models\Content;
+use App\Models\User;
 use App\Services\DateService;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class InfoResource extends JsonResource {
 
+    
     /**
-     * The function `toArray` returns an array containing user information, featured users, users with
-     * upcoming birthdays, an important notice, and the latest event.
+     * The toArray function retrieves user information, calculates age and birthdate status, and
+     * includes featured users, users with birthdates, and last content types.
      * 
-     * @param info The `toArray` function you provided seems to be a method in a class that converts
-     * the object's properties into an array. The `` parameter is not being used in the function.
-     * If you intended to use the `` parameter, you can incorporate it into the array structure or
-     * modify the
+     * @param info The `toArray` function takes an `` parameter, but it seems like the parameter
+     * is not being used within the function. If you intended to use the `` parameter within the
+     * function, you can incorporate it into the logic to customize the output based on the provided
+     * information.
      * 
-     * @return An array is being returned with various pieces of information structured in key-value
-     * pairs. Here is a breakdown of the data being returned:
+     * @return An array is being returned with the following keys and values:
      */
     public function toArray($info)
     {
+        $users_birthdate = User::usersBirthdate();
+
+        if(!$users_birthdate->isEmpty()) {
+            $users_birthdate->each(function($user) {
+                $user->is_birthdate = DateService::isBirthdateUser($user->birth_date);
+                $user->age = DateService::userAge($user->birth_date);
+            });
+        } else {
+            $users_birthdate = NULL;
+        }
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -44,25 +56,9 @@ class InfoResource extends JsonResource {
                     'achievement' => '1° lugar en maraton circuito acuático categoría infantil'
                 ]
             ],
-            'users_birthdate' => [
-                [
-                    'name' => 'Carlos',
-                    'last_name' => 'Ramos',
-                    'mothers_name' => 'Flores',
-                    'age' => 61,
-                ],
-                [
-                    'name' => 'Kenia Gabriela',
-                    'last_name' => 'Ramos',
-                    'mothers_name' => 'Morales',
-                    'age' => 30
-                ]
-            ],
-            'important_notice' => [
-                'title' => 'Mañana no hay clases',
-                'short_description' => 'Por motivos de fuerza mayor se informa que el día de mañana no habrá clases.'
-            ],
-            'last_event' => Event::latest('id')->first()
+            'users_birthdate' => $users_birthdate,
+            'important_notice' => Content::getLastContentType(1),
+            'last_event' => Content::getLastContentType(2)
         ];
     }
 }
