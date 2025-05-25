@@ -30,11 +30,6 @@ class StoreUserRequest extends FormRequest
             'mothers_name' => 'required|min:4|max:100',
             'birth_date' => 'required|date_format:Y-m-d',
             'email' => 'required|email|unique:users|max:120',
-            'password' => [
-                'required',
-                Password::min(8)->letters()->numbers()->symbols()->mixedCase(),
-                'regex:/^\S*$/u'
-            ],
             'role_id' => 'required|integer|exists:roles,id'
         ];
     }
