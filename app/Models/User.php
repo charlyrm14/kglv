@@ -165,4 +165,26 @@ class User extends Authenticatable implements JWTSubject
         ->whereRaw('MONTH(birth_date) = ? AND DAY(birth_date) = ?', [$today->month, $today->day])
         ->get();
     }
+
+    /**
+     * The function `scopeUsersWithRole` selects specific columns from the users table and eager loads
+     * the associated role relationship.
+     * 
+     * @param Builder query The `scopeUsersWithRole` function is a query scope in Laravel Eloquent that
+     * can be used to retrieve users along with their associated role. The function takes a `Builder`
+     * instance `` as a parameter, which represents the query being built.
+     */
+    public function scopeGetUsers(Builder $query): void
+    {
+        $query->select(
+            'id', 
+            'name',
+            'last_name',
+            'mothers_name',
+            'birth_date',
+            'email',
+            'user_code',
+            'role_id'
+        );
+    }
 }
