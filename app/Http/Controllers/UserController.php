@@ -72,4 +72,24 @@ class UserController extends Controller
             'data' => new UserResource($user)
         ], 201);
     }
+
+    public function delete(int $user_id) : JsonResponse
+    {
+        try {
+            
+            $user = User::ById($user_id)->first();
+
+            if(!$user) return response()->json(['message' => 'Usuario no encontrado'], 404);
+
+            $user->delete();
+
+        } catch (\Exception $e) {
+
+            return response()->json(["error" => $e->getMessage()], 500);
+        }
+
+        return response()->json([
+            'message' => 'Usuario eliminado con éxito'
+        ], 200);
+    }
 }
