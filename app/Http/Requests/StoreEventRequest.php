@@ -53,6 +53,6 @@ class StoreEventRequest extends FormRequest
             'errors' => $validator->errors(),
         );
 
-        throw new HttpResponseException(response()->json($response,400));
+        throw new HttpResponseException(response()->json($response, 422));
     }
 }

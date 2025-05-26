@@ -34,6 +34,7 @@ Route::prefix('v1/')->group(function () {
     Route::prefix('users/')->controller(UserController::class)->group(function () {
         Route::get('', 'index');
         Route::post('', 'create');
+        Route::delete('{user_id}', 'delete');
     });
 
     Route::prefix('content/')->group(function() {
@@ -41,7 +42,6 @@ Route::prefix('v1/')->group(function () {
         Route::prefix('events/')->controller(EventController::class)->group(function() {
             Route::get('', 'index');
             Route::post('', 'create');
-            
         });
 
         Route::prefix('notice/')->controller(NoticeController::class)->group(function() {
