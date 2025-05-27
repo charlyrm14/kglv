@@ -143,6 +143,21 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * The scopeByEmail function filters a query by a specific user ID.
+     * 
+     * @param Builder query The `` parameter is an instance of the
+     * `Illuminate\Database\Eloquent\Builder` class, which is used for building database queries in
+     * Laravel's Eloquent ORM.
+     * @param int email The `email` parameter is an integer value that represents the unique
+     * identifier of a user. In the provided code snippet, this parameter is used to filter the query
+     * results based on the `id` column matching the specified `email`.
+     */
+    public function scopeByEmail(Builder $query, string $email): void
+    {
+        $query->select('id', 'name', 'last_name', 'mothers_name', 'email')->where('email', $email);
+    }
+
+    /**
      * This PHP function retrieves users' information based on their birthdate matching the current
      * month and day.
      * 
