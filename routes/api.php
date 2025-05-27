@@ -34,6 +34,7 @@ Route::prefix('v1/')->group(function () {
     Route::prefix('users/')->controller(UserController::class)->group(function () {
         Route::get('', 'index');
         Route::post('', 'create');
+        Route::get('search/{email}', 'searchByEmail');
         Route::delete('{user_id}', 'delete');
     });
 

@@ -73,11 +73,50 @@ class UserController extends Controller
         ], 201);
     }
 
+    /**
+     * This PHP function retrieves users with a specific email and returns them as JSON response.
+     * 
+     * @return JsonResponse The `searchByEmail` function is returning a JSON response. If the ``
+     * collection is not empty, it will return a JSON response with the data containing the users. If
+     * the `` collection is empty, it will return a JSON response with a message indicating that
+     * no results were found. If an exception occurs during the process, it will return a JSON response
+     * with an error message.
+     */
+    public function searchByEmail(string $email) : JsonResponse
+    {
+        try {
+
+            $user = User::byEmail($email)->first();
+
+            if(!$user) return response()->json(['message' => 'Usuario no encontrado'], 404);
+
+        } catch (\Exception $e) {
+
+            return response()->json(["error" => $e->getMessage()], 500);
+        }
+
+        return response()->json([
+            'data' => $user
+        ], 200);
+    }
+
+    /**
+     * The function delete a user based on the specific user id  and returns a JSON response
+     * with a success message or an error message.
+     * 
+     * @param StoreUserRequest request The `delete` function you provided is a controller method that
+     * handles the delete of a user based on the id provided
+     * 
+     * @return JsonResponse A JSON response is being returned. If the user delete is successful, a
+     * JSON response with a success message is returned with status code 200. If an exception
+     * occurs during the process, a JSON response with an error message containing the exception
+     * message is returned with status code 500 (Internal Server Error).
+     */
     public function delete(int $user_id) : JsonResponse
     {
         try {
             
-            $user = User::ById($user_id)->first();
+            $user = User::byId($user_id)->first();
 
             if(!$user) return response()->json(['message' => 'Usuario no encontrado'], 404);
 
