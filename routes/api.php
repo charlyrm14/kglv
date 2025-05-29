@@ -11,7 +11,8 @@ use App\Http\Controllers\{
     NoticeController,
     SwimmingCategoryController,
     UserClassController,
-    IAController
+    IAController,
+    FileController
 };
 
 Route::get('/user', function (Request $request) {
@@ -66,6 +67,11 @@ Route::prefix('v1/')->group(function () {
     Route::prefix('ia/')->controller(IAController::class)->group(function() {
         Route::get('chat/history/{user_id}', 'conversationByUser');
         Route::post('chat', 'chatIA');
+    });
+
+    Route::prefix('file/')->controller(FileController::class)->group(function() {
+        Route::post('upload', 'uploadFile');
+        Route::post('delete', 'deleteFile');
     });
 
 });
