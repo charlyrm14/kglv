@@ -7,7 +7,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\Rule;
 
-class StoreEventRequest extends FormRequest
+class StoreNoticeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,13 +28,6 @@ class StoreEventRequest extends FormRequest
             'title' => 'required|min:5|max:120',
             'content' => 'required',
             'cover_image' => 'nullable',
-            'location' => 'required|string|min:10|max:120',
-            'start_date' => [
-                'required',
-                'date_format:Y-m-d H:i',
-                Rule::date()->after(today()->addDays(1))
-            ],
-            'end_date' => 'required|date_format:Y-m-d H:i|after:start_date',
             'active' => 'nullable|in:0,1'
         ];
     }

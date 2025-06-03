@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
-use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Content extends Model
 {
@@ -47,6 +47,14 @@ class Content extends Model
 
             $content->save();
         });
+    }
+
+    /**
+     * Get the post that owns the comment.
+     */
+    public function contentCategory(): BelongsTo
+    {
+        return $this->belongsTo(ContentCategory::class);
     }
 
     /**

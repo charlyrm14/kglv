@@ -5,9 +5,54 @@ namespace App\Http\Controllers;
 use App\Models\Content;
 use App\Resources\EventResource;
 use Illuminate\Http\JsonResponse;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class ContentController extends Controller
 {
+    /**
+     * Retrieves a list of content items based on the authenticated user's role.
+     *
+     * This method attempts to authenticate the user using a JWT token.
+     * - If the user is not found or authentication fails, it returns a 404 error.
+     * - If the authenticated user has a role ID different from 1 (non-admin),
+     *   only active content items (where 'active' = 1) are returned.
+     * - Admin users (role ID = 1) receive all content items regardless of their active status.
+     * 
+     * The content items are loaded along with their associated 'contentCategory' relationship.
+     * 
+     * In case of any unexpected exceptions during execution, a 500 server error response is returned.
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function index () : JsonResponse 
+    {
+        try {
+            
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['error' => 'Usuario no encontrado'], 404);
+            }
+
+            $query = Content::query();
+
+            if( (int) $user->role_id !== 1) {
+                $query->where('active', 1);
+            } 
+
+            $contents = $query->with('contentCategory')->get();
+
+            if($contents->isEmpty()) return response()->json(['message' => 'No se encontraron resultados'], 404);
+
+        } catch (\Exception $e) {
+            
+            return response()->json(["error" => 'Error del servidor'], 500);
+        }
+
+        return response()->json([
+            'data' => $contents
+        ], 200);
+    }
+
     /**
      * The function retrieves and displays event details based on a given slug in PHP, handling errors
      * appropriately.
@@ -39,5 +84,41 @@ class ContentController extends Controller
             'message' => 'success',
             'data' => new EventResource($content)
         ], 200);
+    }
+
+    /**
+     * Deletes a content item by its slug.
+     *
+     * This method attempts to find a content record using the provided slug.
+     * - If the content is not found, it returns a 404 Not Found response.
+     * - If found, it deletes the content from the database.
+     * 
+     * In case of an unexpected error during the operation, it returns a 500 Internal Server Error response.
+     * 
+     * @param string $slug The unique slug identifier of the content item.
+     * 
+     * @return \Illuminate\Http\JsonResponse A JSON response indicating the result of the operation.
+     * - 200 OK with success message on successful deletion.
+     * - 404 Not Found if the content item does not exist.
+     * - 500 Internal Server Error in case of an exception.
+     */
+    public function delete(string $slug) : JsonResponse
+    {
+        try {
+
+            $content = Content::getContBySlug($slug);
+            
+            if(!$content) return response()->json(['message' => 'Recurso no encontrado'], 404);
+
+            $content->delete();
+
+        } catch (\Exception $e) {
+            
+            return response()->json(["error" => 'Error del servidor'], 500);
+        }
+
+        return response()->json([
+            'message' => 'Contenido eliminado con éxito'
+        ], 200); 
     }
 }

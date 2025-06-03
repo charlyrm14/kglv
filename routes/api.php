@@ -39,17 +39,19 @@ Route::prefix('v1/')->group(function () {
         Route::delete('{user_id}', 'delete');
     });
 
-    Route::prefix('content/')->group(function() {
+    Route::prefix('contents/')->group(function() {
+
+        Route::get('', [ContentController::class, 'index'])->middleware('jwt.verify');
+        Route::get('{slug}/detail', [ContentController::class, 'show']);
+        Route::delete('{slug}', [ContentController::class, 'delete']);
 
         Route::prefix('events/')->controller(EventController::class)->group(function() {
-            Route::get('', 'index');
             Route::post('', 'create');
         });
 
         Route::prefix('notice/')->controller(NoticeController::class)->group(function() {
+            Route::post('', 'create');
         });
-
-        Route::get('{slug}/detail', [ContentController::class, 'show']);
     });
 
 
