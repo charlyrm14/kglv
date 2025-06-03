@@ -10,36 +10,6 @@ use Illuminate\Http\JsonResponse;
 
 class EventController extends Controller
 {
-    private $content_category_id = 2;
-
-    /**
-     * The function retrieves events ordered by start date and returns them as JSON response, handling
-     * potential errors along the way.
-     * 
-     * @return JsonResponse The `index` function is returning a JSON response. If the ``
-     * collection is not empty, it will return a JSON response with the data containing the events in
-     * the collection and a status code of 201. If the `` collection is empty, it will return a
-     * JSON response with a message indicating that no results were found and a status code of 404. If
-     * an exception occurs
-     */
-    public function index () : JsonResponse
-    {
-        try {
-            
-            $events = Content::getContentType($this->content_category_id);
-
-            if($events->isEmpty()) return response()->json(['message' => 'No se encontraron resultados'], 404);
-
-        } catch (\Exception $e) {
-
-            return response()->json(["error" => 'Error del servidor'], 500);
-        }
-
-        return response()->json([
-            'data' => $events
-        ], 201); 
-    }
-
     /**
      * The function creates a new event using validated data from a request, dispatches a notification
      * event, and returns a JSON response with success message and event data.
