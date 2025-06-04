@@ -31,6 +31,8 @@ class NoticeController extends Controller
 
             if($notice->active == 1) NotificationNewContent::dispatch($notice);
 
+            $notice->load('contentCategory');
+
         } catch (\Exception $e) {
 
             return response()->json(["error" => 'Error del servidor'], 500);

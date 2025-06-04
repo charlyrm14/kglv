@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Content;
 use App\Resources\EventResource;
+use App\Services\FileService;
 use Illuminate\Http\JsonResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class ContentController extends Controller
 {
+    private $default_cover_image = 'uploads/swimming-categories/swimmer.png';
+
     /**
      * Retrieves a list of content items based on the authenticated user's role.
      *
@@ -110,6 +113,10 @@ class ContentController extends Controller
             
             if(!$content) return response()->json(['message' => 'Recurso no encontrado'], 404);
 
+            if($content->cover_image !== $this->default_cover_image) {
+                FileService::deleteFile($content->cover_image);
+            }
+            
             $content->delete();
 
         } catch (\Exception $e) {
