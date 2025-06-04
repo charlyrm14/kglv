@@ -32,6 +32,8 @@ class EventController extends Controller
 
             if($event->active == 1) NotificationNewContent::dispatch($event);
 
+            $event->load('contentCategory');
+
         } catch (\Exception $e) {
 
             return response()->json(["error" => 'Error del servidor'], 500);
