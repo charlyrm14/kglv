@@ -6,7 +6,7 @@ use App\Models\Event;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class EventResource extends JsonResource 
+class ContentResource extends JsonResource 
 {
     /**
      * The toArray function converts event data into an associative array with specific keys and
@@ -37,6 +37,7 @@ class EventResource extends JsonResource
             'end_hour' => Carbon::parse($this->end_date)->format('H:i'),
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
+            'content_category_id' => $this->content_category_id,
             'created_at' => Carbon::parse($this->created_date)->format('Y-m-d')
         ];
     }

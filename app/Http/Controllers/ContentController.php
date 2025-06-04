@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Content;
-use App\Resources\EventResource;
+use App\Resources\ContentResource;
 use App\Services\FileService;
 use Illuminate\Http\JsonResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -85,7 +85,7 @@ class ContentController extends Controller
 
         return response()->json([
             'message' => 'success',
-            'data' => new EventResource($content)
+            'data' => new ContentResource($content)
         ], 200);
     }
 
