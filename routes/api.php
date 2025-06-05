@@ -12,7 +12,8 @@ use App\Http\Controllers\{
     SwimmingCategoryController,
     UserClassController,
     IAController,
-    FileController
+    FileController,
+    UserAssistanceController
 };
 
 Route::get('/user', function (Request $request) {
@@ -74,6 +75,11 @@ Route::prefix('v1/')->group(function () {
     Route::prefix('file/')->controller(FileController::class)->group(function() {
         Route::post('upload', 'uploadFile');
         Route::post('delete', 'deleteFile');
+    });
+
+    Route::prefix('assistances/')->controller(UserAssistanceController::class)->group(function() {
+        Route::get('user/', 'getUserAssistance')->middleware('jwt.verify');
+        Route::post('user/', 'assignsUserAssistance');
     });
 
 });
