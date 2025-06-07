@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AssignUserAssistanceRequest;
 use App\Models\User;
 use App\Models\UserAssistance;
+use App\Models\UserClass;
+use App\Services\DateService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
 
 class UserAssistanceController extends Controller
 {
@@ -72,13 +73,21 @@ class UserAssistanceController extends Controller
      * - 422: Attendance already exists for today
      * - 500: Server error
      */
-    public function assignsUserAssistance(AssignUserAssistanceRequest $request) : JsonResponse
+    public function assignUserAssistance(AssignUserAssistanceRequest $request) : JsonResponse
     {
         try {
 
             $user = User::ById($request->user_id)->first();
 
             if(!$user) return response()->json(['message' => 'Usuario no encontrado'], 404);
+
+            if($user->role_id !== 3) return response()->json(['message' => 'No se puede asignar asistencia a este tipo de usuario, solo estudiantes'], 400);
+
+            $today = DateService::getCurrentDay();
+            
+            $user_class = UserClass::getCurrentDaysClass($user->id, $today);
+
+            if(!$user_class) return response()->json(['message' => 'El usuario no tiene asiganado el día de hoy como clase'], 400);
 
             $verify_assistance = UserAssistance::AssistanceById($user->id)->first();
 
