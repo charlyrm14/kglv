@@ -79,7 +79,7 @@ Route::prefix('v1/')->group(function () {
 
     Route::prefix('assistances/')->controller(UserAssistanceController::class)->group(function() {
         Route::get('user/', 'getUserAssistance')->middleware('jwt.verify');
-        Route::post('user/', 'assignsUserAssistance');
+        Route::post('user/', 'assignUserAssistance');
     });
 
 });
