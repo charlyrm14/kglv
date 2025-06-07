@@ -6,27 +6,28 @@ use App\Http\Requests\AssignClassesToUserRequest;
 use App\Models\User;
 use App\Models\UserClass;
 use Illuminate\Http\JsonResponse;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserClassController extends Controller
 {
     /**
-     * This PHP function retrieves classes assigned to a user by their user ID and returns a JSON
-     * response with the data.
-     * 
-     * @param int user_id The `classesByUser` function takes a user_id as a parameter, which is an
-     * integer representing the ID of the user for whom you want to retrieve classes.
-     * 
-     * @return JsonResponse a JSON response. If the user classes are found, it will return a JSON
-     * response with the data containing the user classes. If the user classes are empty, it will
-     * return a JSON response with a message indicating that the user has no classes assigned. If an
-     * exception occurs during the process, it will return a JSON response with an error message
-     * indicating a server error.
+     * Retrieve all classes assigned to the currently authenticated user.
+     *
+     * This method authenticates the user via a JWT token, fetches their assigned classes,
+     * and returns the data in a JSON response. If the user is not found or has no assigned
+     * classes, it returns the appropriate error response.
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function classesByUser(int $user_id) : JsonResponse
+    public function classesByUser() : JsonResponse
     {
         try {
+
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['error' => 'Usuario no encontrado'], 404);
+            }
             
-            $user_classes = UserClass::byUserId($user_id)->get();
+            $user_classes = UserClass::byUserId($user->id)->get();
 
             if($user_classes->isEmpty()) return response()->json(['message' => 'Usuario sin clases asignadas'], 400);
 
@@ -61,6 +62,8 @@ class UserClassController extends Controller
             $user = User::ById($request->user_id)->first();
 
             if(!$user) return response()->json(['message' => 'Usuario invalido'], 404);
+            
+            if($user->role_id !== 3) return response()->json(['message' => 'No se puede asignar clases a este tipo de usuario, solo estudiantes'], 400);
             
             if(count($request->days) > 7) return response()->json(['message' => 'Días de clases por semana excedidos'], 400);
 
