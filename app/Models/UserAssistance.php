@@ -51,4 +51,19 @@ class UserAssistance extends Model
             'created_at'
         )->where('user_id', $user_id)->whereMonth('created_at', Carbon::now()->month)->get();
     }
+
+    /**
+     * Retrieve today's assistance record for a specific user and assistance type.
+     *
+     * @param  int  $user_id  The ID of the user
+     * @param  int  $type_assistance  The type of assistance (e.g., 0 = absent, 1 = present)
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public static function getAssistanceCurrentDayByUser(int $user_id, int $type_assistance)
+    {
+        return static::where([
+            ['user_id', $user_id],
+            ['assistance', $type_assistance]
+        ])->whereDate('created_at', Carbon::today())->first();
+    }
 }

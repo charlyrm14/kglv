@@ -63,7 +63,7 @@ Route::prefix('v1/')->group(function () {
     });
 
     Route::prefix('classes/')->controller(UserClassController::class)->group(function() {
-        Route::get('{user_id}', 'classesByUser');
+        Route::get('', 'classesByUser')->middleware('jwt.verify');
         Route::post('', 'assignClassesToUser');
     });
 

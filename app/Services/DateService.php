@@ -37,11 +37,27 @@ class DateService {
      * age of the user based on the given birthdate and the current date (2025-05-20), and returns the
      * age as an integer.
      */
-    public static function userAge(string $birthdate = '1990-01-01')
+    public static function userAge(string $birthdate = '1990-01-01'): int
     {
         $today = Carbon::today();
         $format_birthdate = Carbon::parse($birthdate);
 
         return (int) $format_birthdate->diffInYears($today);
+    }
+
+    /**
+     * Get the current day of the week in Spanish and uppercase.
+     *
+     * This method uses Carbon to retrieve the current day name
+     * localized in Spanish (e.g., "LUNES", "MARTES"). The result
+     * is returned in uppercase with proper UTF-8 handling for accents.
+     *
+     * @return string The uppercase Spanish name of the current weekday.
+     */
+    public static function getCurrentDay(): string 
+    {
+        Carbon::setLocale('es');
+
+        return mb_strtoupper(Carbon::now()->translatedFormat('l'), 'UTF-8');
     }
 }
