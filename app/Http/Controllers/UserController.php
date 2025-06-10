@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Http\Requests\StoreUserRequest;
+use App\Models\SwimmingCategory;
+use App\Models\SwimmingCategoryUser;
 use App\Resources\UserResource;
 use App\Services\PasswordService;
 use Illuminate\Http\JsonResponse;
@@ -71,6 +73,59 @@ class UserController extends Controller
             'message' => 'Hemos enviado un email con los datos de acceso al usuario',
             'data' => new UserResource($user)
         ], 201);
+    }
+
+    /**
+     * Display detailed information for a specific user, including classes and swimming levels.
+     *
+     * @param int $user_id The ID of the user to retrieve.
+     * @return \Illuminate\Http\JsonResponse JSON response containing user data or an error message.
+     *
+     * This method performs the following:
+     * - Retrieves the user by ID along with their related classes.
+     * - If the user is not found, returns a 404 response with a "Usuario no encontrado" message.
+     * - Retrieves all swimming categories associated with the user.
+     * - Replaces each swimming category ID with its corresponding title.
+     * - Attaches the list of swimming levels to the user as 'swimming_levels'.
+     * - Determines the user's highest swimming level and assigns it as 'current_swimming_level'.
+     * - If no categories are found, sets 'swimming_levels' as an empty array and 'current_swimming_level' as NULL.
+     * - Catches and returns any exceptions with a 500 error code and the exception message.
+     */
+    public function show(int $user_id): JsonResponse
+    {
+        try {
+
+            $user = User::ById($user_id)->with('classes')->first();
+
+            if(!$user) return response()->json(['message' => 'Usuario no encontrado'], 404);
+
+            $user_categories = SwimmingCategoryUser::categoriesByUser($user->id)->get();
+            
+            if(!$user_categories->isEmpty()){
+
+                $user_categories->each(function($value) {
+                    $value->category = SwimmingCategory::categoryById($value->swimming_category_id)->first()?->title;
+                });
+
+                $user->swimming_levels = $user_categories;
+
+                $current_level = SwimmingCategory::categoryById($user_categories->max('swimming_category_id'))->first();
+
+                $user->current_swimming_level = $current_level ?? NULL;
+
+            } else {
+                $user->swimming_levels = [];
+                $user->current_swimming_level = NULL;
+            }
+
+        } catch (\Exception $e) {
+
+            return response()->json(["error" => $e->getMessage()], 500);
+        }
+
+        return response()->json([
+            'data' => $user
+        ], 200);
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserClass extends Model
 {
@@ -44,5 +45,13 @@ class UserClass extends Model
             ['user_id', $user_id],
             ['day', $current_day]
         ])->first();
+    }
+
+    /**
+     * Get the user that owns the class.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
