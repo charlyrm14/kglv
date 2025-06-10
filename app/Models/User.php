@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -202,5 +203,13 @@ class User extends Authenticatable implements JWTSubject
             'user_code',
             'role_id'
         );
+    }
+
+    /**
+     * Get the classes that owns the user.
+     */
+    public function classes(): HasMany
+    {
+        return $this->hasMany(UserClass::class);
     }
 }
