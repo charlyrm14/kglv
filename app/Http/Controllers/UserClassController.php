@@ -27,7 +27,7 @@ class UserClassController extends Controller
                 return response()->json(['error' => 'Usuario no encontrado'], 404);
             }
             
-            $user_classes = UserClass::byUserId($user->id)->get();
+            $user_classes = UserClass::activeClassesByUserId($user->id)->get();
 
             if($user_classes->isEmpty()) return response()->json(['message' => 'Usuario sin clases asignadas'], 400);
 
@@ -73,11 +73,17 @@ class UserClassController extends Controller
 
             $user_classes = UserClass::byUserId($user->id)->get();
 
-            if(!$user_classes->isEmpty()) return response()->json(['message' => 'Usuario ya cuenta con clases aignadas'], 400);
+            if(!$user_classes->isEmpty()) {
+                foreach($user_classes as $user_class) {
+                    $user_class->status = 0;
+                    $user_class->save();
+                }
+            }
 
             foreach($request->days as $value) {
                 $data = $request->except('days');
                 $data['day'] = $value;
+                $data['status'] = 1;
                 UserClass::create($data);
             }
 

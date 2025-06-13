@@ -155,7 +155,7 @@ class User extends Authenticatable implements JWTSubject
      */
     public function scopeByEmail(Builder $query, string $email): void
     {
-        $query->select('id', 'name', 'last_name', 'mothers_name', 'email')->where('email', $email);
+        $query->select('id', 'name', 'last_name', 'mothers_name', 'email', 'role_id')->where('email', $email);
     }
 
     /**
@@ -200,6 +200,7 @@ class User extends Authenticatable implements JWTSubject
             'mothers_name',
             'birth_date',
             'email',
+            'phone_number',
             'user_code',
             'role_id'
         );

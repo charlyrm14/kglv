@@ -33,6 +33,7 @@ class UserResource extends JsonResource
             'mothers_name' => $this->mothers_name,
             'birth_date' => $this->birth_date,
             'email' => $this->email,
+            'phone_number' => $this->phone_number,
             'user_code' => $this->user_code,
             'role_id' => $this->role_id,
             'role' => [

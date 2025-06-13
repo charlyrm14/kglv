@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class UserAssistance extends Model
 {
@@ -65,5 +66,24 @@ class UserAssistance extends Model
             ['user_id', $user_id],
             ['assistance', $type_assistance]
         ])->whereDate('created_at', Carbon::today())->first();
+    }
+
+    /**
+     * Retrieves the assistance history records for a specific user and a given month/year.
+     *
+     * Parses the given date and returns all UserAssistance records that match the user ID
+     * and fall within the same month and year as the provided date.
+     *
+     * @param int $user_id The ID of the user whose assistance records are being retrieved.
+     * @param string $date A date string in a parseable format (e.g., "2025-06") used to filter records by month and year.
+     * @return \Illuminate\Support\Collection A collection of UserAssistance records matching the criteria.
+     */
+    public static function getHistoryAssistanceByUserAndDate(int $user_id, string $date): Collection
+    {
+        $date = Carbon::parse($date);
+
+        return static::where([
+            ['user_id', $user_id]
+        ])->whereYear('created_at', $date->year)->whereMonth('created_at', $date->month)->get();
     }
 }

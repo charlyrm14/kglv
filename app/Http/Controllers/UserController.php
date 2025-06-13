@@ -95,7 +95,9 @@ class UserController extends Controller
     {
         try {
 
-            $user = User::ById($user_id)->with('classes')->first();
+            $user = User::ById($user_id)->with(['classes' => function($query) {
+                $query->where('status', 1);
+            }])->first();
 
             if(!$user) return response()->json(['message' => 'Usuario no encontrado'], 404);
 
@@ -141,7 +143,9 @@ class UserController extends Controller
     {
         try {
 
-            $user = User::byEmail($email)->first();
+            $user = User::byEmail($email)->with(['role' => function($query){
+                $query->select('id', 'name');
+            }])->first();
 
             if(!$user) return response()->json(['message' => 'Usuario no encontrado'], 404);
 

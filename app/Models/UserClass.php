@@ -17,7 +17,8 @@ class UserClass extends Model
         'user_id',
         'day',
         'entry_time',
-        'departure_time'
+        'departure_time',
+        'status'
     ];
 
     /**
@@ -26,10 +27,25 @@ class UserClass extends Model
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @param  int  $user_id  The ID of the user to filter by
      * @return void
- */
+    */
     public function scopeByUserId(Builder $query, int $user_id): void
     {
         $query->where('user_id', $user_id);
+    }
+
+    /**
+     * Scope a query to only include records for a specific user with active status.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int  $user_id  The ID of the user to filter by
+     * @return void
+    */
+    public function scopeActiveClassesByUserId(Builder $query, int $user_id): void
+    {
+        $query->where([
+            ['user_id', $user_id],
+            ['status', 1]
+        ]);
     }
 
     /**
@@ -43,7 +59,8 @@ class UserClass extends Model
     {   
         return static::where([
             ['user_id', $user_id],
-            ['day', $current_day]
+            ['day', $current_day],
+            ['status', 1]
         ])->first();
     }
 
