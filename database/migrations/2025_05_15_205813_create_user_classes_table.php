@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('day');
             $table->string('entry_time');
             $table->string('departure_time');
+            $table->tinyInteger('status');
             $table->timestamps();
         });
     }

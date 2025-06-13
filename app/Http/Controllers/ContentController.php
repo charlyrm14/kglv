@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\StatusContent;
+use App\Http\Requests\UpdateContentStatusRequest;
 use App\Models\Content;
 use App\Resources\ContentResource;
 use App\Services\FileService;
 use Illuminate\Http\JsonResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
 
 class ContentController extends Controller
 {
@@ -28,7 +29,7 @@ class ContentController extends Controller
      * 
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index () : JsonResponse 
+    public function index(): JsonResponse 
     {
         try {
             
@@ -70,7 +71,7 @@ class ContentController extends Controller
      * resource was not found and a status code of 404 will be returned. If an exception occurs during
      * the process, a JSON response
      */
-    public function show(string $slug) : JsonResponse
+    public function show(string $slug): JsonResponse
     {
         try {
 
@@ -90,6 +91,48 @@ class ContentController extends Controller
     }
 
     /**
+     * Update the activation status of a content item by its slug.
+     *
+     * This endpoint receives a validated request containing the new status (active/inactive)
+     * and updates the corresponding content record. If the content is not found,
+     * it returns a 404 error. On success, it returns a JSON response with the updated
+     * status and a human-readable label.
+     *
+     * @param  UpdateContentStatusRequest  $request  The validated request containing the new status value.
+     * @param  string  $slug  The unique slug identifying the content item to update.
+     * @return JsonResponse
+     *
+     *
+     * @throws \Exception if an unexpected error occurs during the operation.
+     */
+    public function updateStatus(UpdateContentStatusRequest $request, string $slug): JsonResponse
+    {
+        try {
+
+            $content = Content::getContBySlug($slug);
+            
+            if(!$content) return response()->json(['message' => 'Recurso no encontrado'], 404);
+
+            $content->active = $request->active;
+            $content->save();
+
+            $statusLabel = StatusContent::from($request->active)->label();
+
+            return response()->json([
+                'message' => "Se ha actualizado el estatus del contenido a {$statusLabel}",
+                'data' => [
+                    'title' => $content->title,
+                    'status' => $content->active,
+                    'status_label' => $statusLabel
+                ]
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json(["error" => 'Error del servidor'], 500);
+        }
+    }
+
+    /**
      * Deletes a content item by its slug.
      *
      * This method attempts to find a content record using the provided slug.
@@ -105,7 +148,7 @@ class ContentController extends Controller
      * - 404 Not Found if the content item does not exist.
      * - 500 Internal Server Error in case of an exception.
      */
-    public function delete(string $slug) : JsonResponse
+    public function delete(string $slug): JsonResponse
     {
         try {
 

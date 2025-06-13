@@ -13,7 +13,8 @@ use App\Http\Controllers\{
     UserClassController,
     IAController,
     FileController,
-    UserAssistanceController
+    UserAssistanceController,
+    ReportingController
 };
 
 Route::get('/user', function (Request $request) {
@@ -46,6 +47,7 @@ Route::prefix('v1/')->group(function () {
         Route::get('', [ContentController::class, 'index'])->middleware('jwt.verify');
         Route::get('{slug}/detail', [ContentController::class, 'show']);
         Route::delete('{slug}', [ContentController::class, 'delete']);
+        Route::patch('{slug}/status', [ContentController::class, 'updateStatus']);
 
         Route::prefix('events/')->controller(EventController::class)->group(function() {
             Route::post('', 'create');
@@ -81,6 +83,10 @@ Route::prefix('v1/')->group(function () {
     Route::prefix('assistances/')->controller(UserAssistanceController::class)->group(function() {
         Route::get('user/', 'getUserAssistance')->middleware('jwt.verify');
         Route::post('user/', 'assignUserAssistance');
+    });
+
+    Route::prefix('reporting/')->controller(ReportingController::class)->group(function() {
+        Route::post('user-assistance', 'userAssistance');
     });
 
 });

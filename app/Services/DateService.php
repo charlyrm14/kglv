@@ -4,7 +4,6 @@ namespace App\Services;
 
 use Carbon\Carbon;
 
-
 class DateService {
 
     /**
@@ -18,7 +17,7 @@ class DateService {
      * returns a boolean value indicating whether the provided birthdate matches today's date in terms
      * of the day and month.
      */
-    public static function isBirthdateUser(string $birthdate = '1990-01-01')
+    public static function isBirthdateUser(string $birthdate = '1990-01-01'): string
     {
         $today = Carbon::today();
         $format_birthdate = Carbon::parse($birthdate);
@@ -59,5 +58,21 @@ class DateService {
         Carbon::setLocale('es');
 
         return mb_strtoupper(Carbon::now()->translatedFormat('l'), 'UTF-8');
+    }
+
+    /**
+     * Returns the day of the week in uppercase Spanish for a given date.
+     *
+     * This method parses the given date string, sets the locale to Spanish,
+     * and returns the translated day of the week in uppercase (e.g., "LUNES").
+     *
+     * @param string $date A date string in 'Y-m-d' format. Defaults to '1990-01-01'.
+     * @return string The day of the week in uppercase Spanish (e.g., "MIÉRCOLES").
+     */
+    public static function getDayByDate(string $date = '1990-01-01'): string
+    {
+        Carbon::setLocale('es');
+
+        return mb_strtoupper(Carbon::parse($date)->translatedFormat('l'), 'UTF-8');
     }
 }
