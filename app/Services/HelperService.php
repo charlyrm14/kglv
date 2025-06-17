@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 
 class HelperService {
 
@@ -35,5 +36,20 @@ class HelperService {
     public static function userFileName(User $user): string
     {
         return 'reporte-asistencias-' . strtolower($user->name) . '-' . $user->id . '-' . date('YmdHis') . '.xlsx';
+    }
+
+    /**
+     * Generate a unique UUID-based token as a string.
+     *
+     * This static method creates a new universally unique identifier (UUID)
+     * using Laravel's Str helper and returns it as a string. It is typically
+     * used for password reset tokens, email verification links, or any
+     * operation requiring a unique, non-guessable token.
+     *
+     * @return string  A newly generated UUID token.
+     */
+    public static function generateToken(): string
+    {
+        return (string) Str::uuid();
     }
 }

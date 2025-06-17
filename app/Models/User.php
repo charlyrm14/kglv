@@ -34,7 +34,6 @@ class User extends Authenticatable implements JWTSubject
         'phone_number',
         'user_code',
         'password',
-        'token',
         'role_id'
     ];
 
@@ -68,7 +67,6 @@ class User extends Authenticatable implements JWTSubject
     {
         static::creating(function (User $user) {
             $user->user_code = (string) date('YmdHis');
-            $user->token = (string) Str::uuid();
         });
     }
 
@@ -121,11 +119,6 @@ class User extends Authenticatable implements JWTSubject
     public function biography() : HasOne
     {
         return $this->hasOne(UserBiography::class);
-    }
-
-    public function featured() : HasOne
-    {
-        return $this->hasOne(FeaturedUser::class);
     }
 
     /**

@@ -22,7 +22,7 @@ class AuthController extends Controller
      * a JSON response with an error message. If an exception occurs during the login process, it
      * returns a JSON response with the error message from the exception.
      */
-    public function login(LoginRequest $request) : JsonResponse
+    public function login(LoginRequest $request): JsonResponse
     {
         try {
 
@@ -36,10 +36,10 @@ class AuthController extends Controller
             }
 
             /** Obtiene usuario autenticado */
-            $user = auth()->user();
+            $user = JWTAuth::user();
 
-            if(!is_null($user->token)) return response()->json(['message' => 'Verifica tu cuenta'], 400);
-
+            if(!is_null($user->token)) return response()->json(['message' => 'Verifica tu cuenta, revisa tu correo'], 403);
+            
             $token = JWTAuth::claims(['role' => $user->role])->fromUser($user);
 
             return response()->json([
@@ -64,7 +64,7 @@ class AuthController extends Controller
      * not found or there is an issue with the token, appropriate error messages are returned along
      * with the corresponding HTTP status codes.
      */
-    public function getUserInfo() : JsonResponse
+    public function getUserInfo(): JsonResponse
     {
         try {
 
@@ -89,11 +89,11 @@ class AuthController extends Controller
      * 
      * @return A JSON response with the message 'Session closed successfully' and a status code of 200.
      */
-    public function logout() : JsonResponse
+    public function logout(): JsonResponse
     {
         try {
 
-            auth()->logout();
+            JWTAuth::invalidate(JWTAuth::getToken());
 
             return response()->json(['message' => 'Sesión cerrada con éxito'], 200);
 

@@ -22,7 +22,6 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('user_code', 20);
             $table->string('password');
-            $table->string('token')->nullable();
             $table->rememberToken();
             $table->foreignId('role_id')->constrained()->onDelete('cascade');
             $table->timestamps();

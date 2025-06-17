@@ -14,7 +14,8 @@ use App\Http\Controllers\{
     IAController,
     FileController,
     UserAssistanceController,
-    ReportingController
+    ReportingController,
+    PasswordController
 };
 
 Route::get('/user', function (Request $request) {
@@ -40,6 +41,12 @@ Route::prefix('v1/')->group(function () {
         Route::get('{user_id}', 'show');
         Route::get('search/{email}', 'searchByEmail');
         Route::delete('{user_id}', 'delete');
+    });
+
+    Route::prefix('password/')->controller(PasswordController::class)->group(function () {
+        Route::post('email', 'generateToken');
+        Route::post('reset', 'changePassword');
+        Route::get('validate-token/{token}', 'validateToken');
     });
 
     Route::prefix('contents/')->group(function() {
