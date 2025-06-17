@@ -9,6 +9,8 @@ use App\Models\SwimmingCategoryUser;
 use App\Resources\UserResource;
 use App\Services\PasswordService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\UserRegisteredMail;
 
 class UserController extends Controller
 {
@@ -22,7 +24,7 @@ class UserController extends Controller
      * no results were found. If an exception occurs during the process, it will return a JSON response
      * with an error message.
      */
-    public function index() : JsonResponse
+    public function index(): JsonResponse
     {
         try {
             
@@ -53,7 +55,7 @@ class UserController extends Controller
      * occurs during the process, a JSON response with an error message containing the exception
      * message is returned with status code 500 (Internal Server Error).
      */
-    public function create(StoreUserRequest $request) : JsonResponse
+    public function create(StoreUserRequest $request): JsonResponse
     {
         try {
 
@@ -63,6 +65,9 @@ class UserController extends Controller
             $user = User::create($data);
 
             $user->load('role'); // carga la relación del rol del usuario creado para agregarla en la respuesta
+            
+            Mail::to($request->email)
+                ->send(new UserRegisteredMail($user, $password));
 
         } catch (\Exception $e) {
 
@@ -139,7 +144,7 @@ class UserController extends Controller
      * no results were found. If an exception occurs during the process, it will return a JSON response
      * with an error message.
      */
-    public function searchByEmail(string $email) : JsonResponse
+    public function searchByEmail(string $email): JsonResponse
     {
         try {
 
@@ -171,7 +176,7 @@ class UserController extends Controller
      * occurs during the process, a JSON response with an error message containing the exception
      * message is returned with status code 500 (Internal Server Error).
      */
-    public function delete(int $user_id) : JsonResponse
+    public function delete(int $user_id): JsonResponse
     {
         try {
             

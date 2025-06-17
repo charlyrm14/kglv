@@ -68,12 +68,10 @@ class IAController extends Controller
             if(!$user) return response()->json(['message' => 'Usuario no encontrado'], 404);
 
             $teachers = User::with('biography')->where('role_id', 2)->get();
-            $students = User::with('featured')->where('role_id', 3)->get();
 
             $context = [
                 'user' => $user,
-                'teachers' => $teachers,
-                'students' => $students
+                'teachers' => $teachers
             ];
 
             $prompt = "Eres un asistente experto en deportes, especialmente en natación. 
