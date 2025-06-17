@@ -17,7 +17,7 @@
                         <tr>
                             <td style="padding: 30px; text-align: left; color: #333333;">
                                 <p style="font-size: 16px; margin: 0 0 20px;">Recibimos una solicitud para restablecer tu contraseña. Haz clic en el botón de abajo para establecer una nueva.</p>
-                                <a href="{{ $frontend_url }}/reset-password?token={{ $token }}" 
+                                <a href="{{ $frontend_url }}/password/reset?token={{ $token }}" 
                                     style="display: inline-block; padding: 12px 24px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px; font-size: 16px;">
                                         Ir al sitio
                                 </a>
