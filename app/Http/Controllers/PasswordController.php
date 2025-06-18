@@ -121,6 +121,8 @@ class PasswordController extends Controller
             $user->password = $request->password;
             $user->save();
 
+            PasswordResetToken::deleteOlderTokens($user->email);
+
         } catch (\Exception $e) {
 
             return response()->json(["error" => $e->getMessage()], 500);
