@@ -7,8 +7,8 @@ use App\Http\Requests\{
 };
 use App\Models\User;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\UserAssistanceExport;
-use App\Models\UserAssistance;
+use App\Exports\UserAttendanceExport;
+use App\Models\UserAttendance;
 use App\Services\HelperService;
 
 class ReportingController extends Controller
@@ -23,14 +23,15 @@ class ReportingController extends Controller
      * @param \App\Http\Requests\UserAssistanceReportingRequest $request
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\JsonResponse
      */
-    public function userAssistance(UserAssistanceReportingRequest $request)
+    public function userAttendance(UserAssistanceReportingRequest $request)
     {
         try {
+
             $user = User::byId($request->user_id)->first();
 
             if(!$user) return response()->json(['message' => 'Usuario no encontrado'], 404);
 
-            $assistances = UserAssistance::getHistoryAssistanceByUserAndDate($user->id, $request->date);
+            $assistances = UserAttendance::getHistoryAttendanceByUserAndDate($user->id, $request->date);
 
             if($assistances->isEmpty()) {
                 return response()->json([
@@ -38,7 +39,7 @@ class ReportingController extends Controller
                 ], 404);
             }
 
-            return Excel::download(new UserAssistanceExport($user, $assistances), HelperService::userFileName($user));
+            return Excel::download(new UserAttendanceExport($user, $assistances), HelperService::reportingFileName($user));
 
         } catch (\Exception $e) {
 

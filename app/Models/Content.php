@@ -22,7 +22,7 @@ class Content extends Model
         'start_date',
         'end_date',
         'active',
-        'content_category_id'
+        'content_type_id'
     ];
 
     /**
@@ -54,23 +54,23 @@ class Content extends Model
      */
     public function contentCategory(): BelongsTo
     {
-        return $this->belongsTo(ContentCategory::class);
+        return $this->belongsTo(ContentType::class);
     }
 
     /**
      * The function `getContentType` retrieves content based on the provided content category ID.
      * 
-     * @param int content_category_id The `getContentType` function is a static method that retrieves
-     * data from a database table based on the provided `content_category_id`. It uses the Eloquent ORM
+     * @param int content_type_id The `getContentType` function is a static method that retrieves
+     * data from a database table based on the provided `content_type_id`. It uses the Eloquent ORM
      * to query the database table associated with the model class where this method is defined.
      * 
      * @return The `getContentType` function is returning a collection of records from the database
-     * where the `content_category_id` matches the provided ``.
+     * where the `content_type_id` matches the provided ``.
      */
-    public static function getContentType(int $content_category_id)
+    public static function getContentType(int $content_type_id)
     {
         return static::where([
-            ['content_category_id', $content_category_id],
+            ['content_type_id', $content_type_id],
             ['active', 1]
         ])->get();
     }
@@ -78,7 +78,7 @@ class Content extends Model
     /**
      * This PHP function retrieves the latest content type based on the provided content category ID.
      * 
-     * @param int content_category_id The `content_category_id` parameter is an integer value that
+     * @param int content_type_id The `content_type_id` parameter is an integer value that
      * represents the category of the content for which you want to retrieve the last content type.
      * This function retrieves the latest content entry of a specific category that is also marked as
      * active.
@@ -88,10 +88,10 @@ class Content extends Model
      * with the specified content category ID and active status, then orders the results by the `id`
      * column in descending order (latest first) and returns the first result.
      */
-    public static function getLastContentType(int $content_category_id)
+    public static function getLastContentType(int $content_type_id)
     {
         return static::where([
-            ['content_category_id', $content_category_id],
+            ['content_type_id', $content_type_id],
             ['active', 1]
         ])->latest('id')->first();
     }

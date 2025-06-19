@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Events\NotificationNewContent;
 use App\Models\Content;
 use App\Http\Requests\StoreEventRequest;
-use App\Resources\EventResource;
 use Illuminate\Http\JsonResponse;
 
 class EventController extends Controller
@@ -27,7 +26,7 @@ class EventController extends Controller
     {
         try {
 
-            $data = $request->validated() + ['content_category_id' => 2];
+            $data = $request->validated() + ['content_type_id' => 2];
             $event = Content::create($data);
 
             if($event->active == 1) NotificationNewContent::dispatch($event);

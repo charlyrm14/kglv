@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('content_categories', function (Blueprint $table) {
+        Schema::create('user_schedules', function (Blueprint $table) {
             $table->id();
-            $table->string('title', 120);
-            $table->string('slug')->nullable();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('day');
+            $table->string('entry_time');
+            $table->string('departure_time');
+            $table->tinyInteger('status');
             $table->timestamps();
         });
     }
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('content_categories');
+        Schema::dropIfExists('user_schedules');
     }
 };

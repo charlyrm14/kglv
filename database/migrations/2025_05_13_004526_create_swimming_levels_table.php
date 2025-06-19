@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_assistances', function (Blueprint $table) {
+        Schema::create('swimming_levels', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
-            $table->tinyInteger('assistance');
+            $table->string('name', 30);
+            $table->string('image', 150)->nullable();
+            $table->text('description');
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_assistances');
+        Schema::dropIfExists('swimming_levels');
     }
 };

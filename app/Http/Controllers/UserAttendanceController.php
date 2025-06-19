@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AssignUserAssistanceRequest;
+use App\Http\Requests\AssignUserAttendanceRequest;
 use App\Models\User;
-use App\Models\UserAssistance;
-use App\Models\UserClass;
+use App\Models\UserAttendance;
+use App\Models\UserSchedule;
 use App\Services\DateService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class UserAssistanceController extends Controller
+class UserAttendanceController extends Controller
 {
     /**
      * Retrieve the authenticated user's assistance records for the current month.
@@ -26,7 +26,7 @@ class UserAssistanceController extends Controller
      *     - 404: If the user is not found or has no assistance records for the current month.
      *     - 500: On server error.
      */
-    public function getUserAssistance(): JsonResponse
+    public function getUserAttendance(): JsonResponse
     {
         try {
 
@@ -34,7 +34,7 @@ class UserAssistanceController extends Controller
                 return response()->json(['error' => 'Usuario no encontrado'], 404);
             }
 
-            $user_assistances = UserAssistance::getAssistanceCurrentMonth($user->id);
+            $user_assistances = UserAttendance::getAttendanceCurrentMonth($user->id);
 
             if($user_assistances->isEmpty()) {
                 return response()->json(['message' => 'Usuario no cuenta con asistencias del mes en curso'], 404);
@@ -73,7 +73,7 @@ class UserAssistanceController extends Controller
      * - 422: Attendance already exists for today
      * - 500: Server error
      */
-    public function assignUserAssistance(AssignUserAssistanceRequest $request) : JsonResponse
+    public function assignUserAttendance(AssignUserAttendanceRequest $request): JsonResponse
     {
         try {
 
@@ -85,17 +85,17 @@ class UserAssistanceController extends Controller
 
             $today = DateService::getCurrentDay();
             
-            $user_class = UserClass::getCurrentDaysClass($user->id, $today);
+            $user_class = UserSchedule::getCurrentDaysClass($user->id, $today);
 
             if(!$user_class) return response()->json(['message' => 'El usuario no tiene asiganado el día de hoy como clase'], 400);
 
-            $verify_assistance = UserAssistance::AssistanceById($user->id)->first();
+            $verify_assistance = UserAttendance::attendanceById($user->id)->first();
 
             if($verify_assistance) return response()->json(['message' => 'Usuario ya cuenta con asistencia del día de hoy'], 422);
 
-            $data = $request->validated() + ['assistance' => 1, 'assistance_date' => Carbon::now()->format('Y-m-d')];
+            $data = $request->validated() + ['present' => 1];
 
-            UserAssistance::create($data);
+            UserAttendance::create($data);
 
         } catch (\Exception $e) {
 

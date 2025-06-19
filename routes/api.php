@@ -9,11 +9,11 @@ use App\Http\Controllers\{
     ContentController,
     EventController,
     NoticeController,
-    SwimmingCategoryController,
-    UserClassController,
+    SwimmingLevelController,
+    UserScheduleController,
     IAController,
     FileController,
-    UserAssistanceController,
+    UserAttendanceController,
     ReportingController,
     PasswordController
 };
@@ -32,7 +32,7 @@ Route::prefix('v1/')->group(function () {
     })->middleware('jwt.verify');
 
     Route::prefix('info/')->controller(InfoController::class)->group(function () {
-        Route::get('{user_id}', 'appInfo');
+        Route::get('{user_id}', 'appInfo')->middleware('jwt.verify');
     });
 
     Route::prefix('users/')->controller(UserController::class)->group(function () {
@@ -66,19 +66,19 @@ Route::prefix('v1/')->group(function () {
     });
 
 
-    Route::prefix('swimming-categories/')->controller(SwimmingCategoryController::class)->group(function() {
+    Route::prefix('swimming-levels/')->controller(SwimmingLevelController::class)->group(function() {
         Route::get('', 'index');
-        Route::get('by-user/{user_id}', 'byUser');
+        Route::get('user', 'byUser')->middleware('jwt.verify');
         Route::post('assign-to-user', 'assignToUser');
     });
 
-    Route::prefix('classes/')->controller(UserClassController::class)->group(function() {
-        Route::get('', 'classesByUser')->middleware('jwt.verify');
-        Route::post('', 'assignClassesToUser');
+    Route::prefix('schedules/')->controller(UserScheduleController::class)->group(function() {
+        Route::get('', 'schedulesByUser')->middleware('jwt.verify');
+        Route::post('', 'assignSchedulesToUser');
     });
 
     Route::prefix('ia/')->controller(IAController::class)->group(function() {
-        Route::get('chat/history/{user_id}', 'conversationByUser');
+        Route::get('chat/history', 'conversationByUser')->middleware('jwt.verify');
         Route::post('chat', 'chatIA');
     });
 
@@ -87,13 +87,13 @@ Route::prefix('v1/')->group(function () {
         Route::post('delete', 'deleteFile');
     });
 
-    Route::prefix('assistances/')->controller(UserAssistanceController::class)->group(function() {
-        Route::get('user/', 'getUserAssistance')->middleware('jwt.verify');
-        Route::post('user/', 'assignUserAssistance');
+    Route::prefix('attendances/')->controller(UserAttendanceController::class)->group(function() {
+        Route::get('user/', 'getUserAttendance')->middleware('jwt.verify');
+        Route::post('user/', 'assignUserAttendance');
     });
 
     Route::prefix('reporting/')->controller(ReportingController::class)->group(function() {
-        Route::post('user-assistance', 'userAssistance');
+        Route::post('user-attendance', 'userAttendance');
     });
 
 });

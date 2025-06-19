@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
             $table->tinyInteger('active')->default(0);
-            $table->foreignId('content_category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('content_type_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -2,25 +2,25 @@
 
 namespace Database\Seeders;
 
-use App\Models\ContentCategory;
+use App\Models\ContentType;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class ContentCategorySeeder extends Seeder
+class ContentTypeSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        ContentCategory::updateOrCreate([
+        ContentType::updateOrCreate([
             'title' => 'Avisos'
         ], [
             'title' => 'Avisos',
             'slug' => 'avisos'
         ]);
 
-        ContentCategory::updateOrCreate([
+        ContentType::updateOrCreate([
             'title' => 'Eventos'
         ], [
             'title' => 'Eventos',

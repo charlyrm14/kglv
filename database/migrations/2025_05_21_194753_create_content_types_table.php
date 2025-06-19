@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('swimming_categories', function (Blueprint $table) {
+        Schema::create('content_types', function (Blueprint $table) {
             $table->id();
-            $table->string('title', 30);
-            $table->string('image', 120);
-            $table->string('message');
+            $table->string('title', 120);
+            $table->string('slug')->nullable();
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('swimming_categories');
+        Schema::dropIfExists('content_types');
     }
 };

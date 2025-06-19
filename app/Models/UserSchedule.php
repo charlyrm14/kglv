@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class UserClass extends Model
+class UserSchedule extends Model
 {
     /**
      * The attributes that are mass assignable.

@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('swimming_category_users', function (Blueprint $table) {
+        Schema::create('user_attendances', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('swimming_category_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->integer('user_id');
+            $table->tinyInteger('present');
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('swimming_category_users');
+        Schema::dropIfExists('user_attendances');
     }
 };

@@ -26,7 +26,7 @@ class NoticeController extends Controller
     {
         try {
 
-            $data = $request->validated() + ['content_category_id' => 1];
+            $data = $request->validated() + ['content_type_id' => 1];
             $notice = Content::create($data);
 
             if($notice->active == 1) NotificationNewContent::dispatch($notice);

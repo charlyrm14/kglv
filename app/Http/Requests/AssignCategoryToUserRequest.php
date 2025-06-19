@@ -24,7 +24,7 @@ class AssignCategoryToUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'swimming_category_id' => 'required|integer|exists:swimming_categories,id',
+            'swimming_level_id' => 'required|integer|exists:swimming_levels,id',
             'user_id' => 'required|integer|exists:users,id',
         ];
     }

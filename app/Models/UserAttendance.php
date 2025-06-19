@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
-class UserAssistance extends Model
+class UserAttendance extends Model
 {
     /**
      * The attributes that are mass assignable.
@@ -16,7 +16,7 @@ class UserAssistance extends Model
      */
     protected $fillable = [
         'user_id',
-        'assistance'
+        'present'
     ];
 
     /**
@@ -29,7 +29,7 @@ class UserAssistance extends Model
      * @param  int  $user_id  The ID of the user to filter by.
      * @return void
      */
-    public function scopeAssistanceById(Builder $query, int $user_id): void
+    public function scopeAttendanceById(Builder $query, int $user_id): void
     {
         $query->where('user_id', $user_id)->whereDate('created_at', Carbon::today());
     }
@@ -44,11 +44,11 @@ class UserAssistance extends Model
      * @param  int  $user_id  The ID of the user whose assistance records are being retrieved.
      * @return \Illuminate\Database\Eloquent\Collection  A collection of UserAssistance records.
      */
-    public static function getAssistanceCurrentMonth(int $user_id)
+    public static function getAttendanceCurrentMonth(int $user_id)
     {
         return static::select(
             'user_id',
-            'assistance',
+            'present',
             'created_at'
         )->where('user_id', $user_id)->whereMonth('created_at', Carbon::now()->month)->get();
     }
@@ -60,11 +60,11 @@ class UserAssistance extends Model
      * @param  int  $type_assistance  The type of assistance (e.g., 0 = absent, 1 = present)
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public static function getAssistanceCurrentDayByUser(int $user_id, int $type_assistance)
+    public static function getAttendanceCurrentDayByUser(int $user_id, int $type_assistance)
     {
         return static::where([
             ['user_id', $user_id],
-            ['assistance', $type_assistance]
+            ['present', $type_assistance]
         ])->whereDate('created_at', Carbon::today())->first();
     }
 
@@ -78,7 +78,7 @@ class UserAssistance extends Model
      * @param string $date A date string in a parseable format (e.g., "2025-06") used to filter records by month and year.
      * @return \Illuminate\Support\Collection A collection of UserAssistance records matching the criteria.
      */
-    public static function getHistoryAssistanceByUserAndDate(int $user_id, string $date): Collection
+    public static function getHistoryAttendanceByUserAndDate(int $user_id, string $date): Collection
     {
         $date = Carbon::parse($date);
 
