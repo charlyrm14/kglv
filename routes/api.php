@@ -92,7 +92,7 @@ Route::prefix('v1/')->group(function () {
         Route::post('user/', 'assignUserAttendance');
     });
 
-    Route::prefix('reporting/')->controller(ReportingController::class)->group(function() {
+    Route::prefix('reports/')->controller(ReportingController::class)->group(function() {
         Route::post('user-attendance', 'userAttendance');
     });
 
