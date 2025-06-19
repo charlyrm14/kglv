@@ -16,7 +16,7 @@ namespace App\Enums;
  *
  * @method string label() Returns a human-readable label for the enum case.
  */
-enum StatusAssistance: int
+enum StatusAttendance: int
 {
     case NoAsistio = 0;
     case Asistio = 1;

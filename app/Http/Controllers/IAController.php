@@ -7,6 +7,7 @@ use App\Http\Requests\ChatIARequest;
 use App\Models\ChatIA;
 use App\Services\APIService;
 use Illuminate\Http\JsonResponse;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class IAController extends Controller
 {
@@ -23,13 +24,13 @@ class IAController extends Controller
      * the user, it returns a JSON response with a message "Sin historial de conversación" and status
      * code 404. If there is an error during the process, it returns a JSON response
      */
-    public function conversationByUser(int $user_id) : JsonResponse
+    public function conversationByUser(): JsonResponse
     {
         try {
-            
-            $user = User::byId($user_id)->first();
 
-            if(!$user) return response()->json(['message' => 'Usuario no encontrado'], 404);
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['error' => 'Usuario no encontrado'], 404);
+            }
 
             $conversation_hsitory = ChatIA::conversationHistoryByUser($user->id)->get();
 
@@ -59,25 +60,30 @@ class IAController extends Controller
      * prepares a prompt based on the received question and the context data. It then uses an
      * `APIService` to query an AI service with the constructed prompt and
      */
-    public function chatIA(ChatIARequest $request) : JsonResponse
+    public function chatIA(ChatIARequest $request): JsonResponse
     {
         try {
 
-            $user = User::with(['biography', 'featured'])->byId($request->user_id)->first();
+            $user = User::with(['profile'])->byId($request->user_id)->first();
             
             if(!$user) return response()->json(['message' => 'Usuario no encontrado'], 404);
 
-            $teachers = User::with('biography')->where('role_id', 2)->get();
+            $users = User::with('profile')->get();
 
             $context = [
                 'user' => $user,
-                'teachers' => $teachers
+                'users' => $users
             ];
 
-            $prompt = "Eres un asistente experto en deportes, especialmente en natación. 
-            Tu tarea es responder preguntas sobre deportes, priorizando natación, y también puedes dar información sobre maestros 
-            alumnos, y el usuario destacados de la escuela de natación, cualquier otro tema ajeno responde que no puedes brindar información al respecto.\n
-            Contexto:\n" . json_encode($context, JSON_PRETTY_PRINT) . "\n
+            $sanitizedContext = json_encode($context, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+            $prompt = "Eres un asistente especializado en deportes, con un enfoque profundo en natación. 
+            Responde preguntas sobre natación, entrenamiento, técnicas, campeonatos, logros y biografías deportivas.
+            rinda información sobre personas de la escuela de natación (maestros, alumnos, usuario actual), pero **no reveles datos sensibles** como contraseñas, correos electrónicos, teléfonos, direcciones o información privada.
+            Si la pregunta no está relacionada con natación, deportes o la comunidad escolar, responde amablemente que no puedes ayudar con ese tema.
+            Mantén un estilo claro, profesional, amigable y enfocado.
+            No inventes información; responde solo con lo que está en el contexto\n
+            Contexto:\n" . $sanitizedContext. "\n
             Pregunta: $request->message\n
             Respuesta:";
 

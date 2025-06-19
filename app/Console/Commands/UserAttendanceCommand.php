@@ -4,20 +4,20 @@ namespace App\Console\Commands;
 
 use App\Models\{ 
     User,
-    UserClass,
-    UserAssistance as AssistanceByUser
+    UserAttendance,
+    UserSchedule
 };
 use App\Services\DateService;
 use Illuminate\Console\Command;
 
-class UserAssistance extends Command
+class UserAttendanceCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'user:assistance';
+    protected $signature = 'user:attendance';
 
     /**
      * The console command description.
@@ -49,19 +49,19 @@ class UserAssistance extends Command
                 /**
                  * Check if the user has a class assigned for the current day.
                  */
-                $user_class = UserClass::getCurrentDaysClass($user->id, $today);
+                $user_class = UserSchedule::getCurrentDaysClass($user->id, $today);
 
                 if(!$user_class) {
 
                     /**
                      * Store a record with a status indicating that the user doesn't have any class assigned.
                      */
-                    $check_duplicate_no_assigned_classes = AssistanceByUser::getAssistanceCurrentDayByUser($user->id, 2);
+                    $check_duplicate_no_assigned_classes = UserAttendance::getAttendanceCurrentDayByUser($user->id, 2);
 
                     if(!$check_duplicate_no_assigned_classes) {
-                        AssistanceByUser::create([
+                        UserAttendance::create([
                             'user_id' => $user->id, 
-                            'assistance' => 2
+                            'present' => 2
                         ]);
                     }
 
@@ -72,7 +72,7 @@ class UserAssistance extends Command
                 /**
                  * Check if the user has an attendance record for the current day.
                  */
-                $user_has_assistance_current_day = AssistanceByUser::getAssistanceCurrentDayByUser($user->id, 1);
+                $user_has_assistance_current_day = UserAttendance::getAttendanceCurrentDayByUser($user->id, 1);
                 
                 if($user_has_assistance_current_day) {
                     $status_records['si_asistieron']++;
@@ -82,12 +82,12 @@ class UserAssistance extends Command
                 /**
                  * Check for duplicate absences
                  */
-                $check_duplicate_absences = AssistanceByUser::getAssistanceCurrentDayByUser($user->id, 0);
+                $check_duplicate_absences = UserAttendance::getAttendanceCurrentDayByUser($user->id, 0);
 
                 if(!$check_duplicate_absences) {
-                    AssistanceByUser::create([
+                    UserAttendance::create([
                         'user_id' => $user->id, 
-                        'assistance' => 0
+                        'present' => 0
                     ]);
                     $status_records['no_asistieron']++;
                 }

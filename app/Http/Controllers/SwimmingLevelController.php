@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SwimmingCategory;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\AssignCategoryToUserRequest;
-use App\Models\SwimmingCategoryUser;
+use App\Models\SwimmingLevel;
+use App\Models\User;
+use App\Models\UserSwimmingLevel;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
-class SwimmingCategoryController extends Controller
+class SwimmingLevelController extends Controller
 {
     /**
      * The function retrieves all swimming categories and returns them as JSON response, handling
@@ -18,11 +20,11 @@ class SwimmingCategoryController extends Controller
      * exception occurs during the process, a 500 status code with an error message is returned.
      * Otherwise, a 201 status code with the data from the `` collection is returned.
      */
-    public function index() : JsonResponse
+    public function index(): JsonResponse
     {
         try {
             
-            $categories = SwimmingCategory::all();
+            $categories = SwimmingLevel::all();
 
             if($categories->isEmpty()) return response()->json(["message" => 'No se encontraron resultados'], 404);
 
@@ -49,25 +51,20 @@ class SwimmingCategoryController extends Controller
      * return a JSON response with the data containing the user categories. If there is an error, it
      * will return a JSON response with an error message.
      */
-    public function byUser(int $user_id) : JsonResponse
+    public function byUser(): JsonResponse
     {
         try {
 
-            $user_categories = SwimmingCategoryUser::categoriesByUser($user_id)->get();
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['error' => 'Usuario no encontrado'], 404);
+            }
 
-            if($user_categories->isEmpty()) return response()->json(["message" => 'No se encontraron resultados'], 404);
+            $swimming_levels = UserSwimmingLevel::categoriesByUser($user->id)->with('swimmingLevel')->get();
 
-            $user_categories->each(function($value) {
-                $value->category = SwimmingCategory::categoryById($value->swimming_category_id)->first()?->title;
-            });
+            if($swimming_levels->isEmpty()) return response()->json(["message" => 'No se encontraron resultados'], 404);
 
-            $data_current_category = SwimmingCategory::categoryById($user_categories->max('swimming_category_id'))->first();
-
-            $current_category = [
-                'category' => optional($data_current_category)->title,
-                'message' => optional($data_current_category)->message,
-                'image' => optional($data_current_category)->image
-            ];
+            // Obtiene el nivel más alto y hace la relación sobre swimmingLevel, de lo contrario retorna NULL
+            $current_level = $swimming_levels->sortByDesc('swimming_level_id')->first()->swimmingLevel ?? NULL;
 
         } catch (\Exception $e) {
 
@@ -76,8 +73,8 @@ class SwimmingCategoryController extends Controller
 
         return response()->json([
             'data' => [
-                'current_category' => $current_category,
-                'categories' => $user_categories
+                'current_level' => $current_level,
+                'swimming_levels' => $swimming_levels
             ]
         ], 200); 
     }
@@ -100,21 +97,21 @@ class SwimmingCategoryController extends Controller
     public function assignToUser(AssignCategoryToUserRequest $request) : JsonResponse
     {
         try {
-            
-            $total_categories_user = SwimmingCategoryUser::categoriesByUser($request->user_id)->count();
 
-            if($total_categories_user >= SwimmingCategory::count()) {
+            $total_categories_user = UserSwimmingLevel::categoriesByUser($request->user_id)->count();
+
+            if($total_categories_user >= SwimmingLevel::count()) {
                 return response()->json(['message' => 'El estudiante ha alcanzado el nivel máximo de las categorías'], 400);
             }
 
-            $exist_category_user = SwimmingCategoryUser::categoryByUser(
-                $request->swimming_category_id,
+            $exist_category_user = UserSwimmingLevel::categoryByUser(
+                $request->swimming_level_id,
                 $request->user_id
             )->first();
 
             if($exist_category_user) return response()->json(['message' => 'El estudiante ya tiene esta categoría asignada'], 400);
 
-            SwimmingCategoryUser::create($request->validated());
+            UserSwimmingLevel::create($request->validated());
 
         } catch (\Exception $e) {
 

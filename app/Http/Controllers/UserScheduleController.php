@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AssignClassesToUserRequest;
 use App\Models\User;
-use App\Models\UserClass;
+use App\Models\UserSchedule;
 use Illuminate\Http\JsonResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-class UserClassController extends Controller
+class UserScheduleController extends Controller
 {
     /**
      * Retrieve all classes assigned to the currently authenticated user.
@@ -19,7 +19,7 @@ class UserClassController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function classesByUser() : JsonResponse
+    public function schedulesByUser() : JsonResponse
     {
         try {
 
@@ -27,7 +27,7 @@ class UserClassController extends Controller
                 return response()->json(['error' => 'Usuario no encontrado'], 404);
             }
             
-            $user_classes = UserClass::activeClassesByUserId($user->id)->get();
+            $user_classes = UserSchedule::activeClassesByUserId($user->id)->get();
 
             if($user_classes->isEmpty()) return response()->json(['message' => 'Usuario sin clases asignadas'], 400);
 
@@ -55,7 +55,7 @@ class UserClassController extends Controller
      * the process, an error message is returned with status code 500 or specific error messages with
      * status code 400 or 404 based on the validation checks.
      */
-    public function assignClassesToUser(AssignClassesToUserRequest $request) : JsonResponse
+    public function assignSchedulesToUser(AssignClassesToUserRequest $request) : JsonResponse
     {
         try {
 
@@ -71,7 +71,7 @@ class UserClassController extends Controller
 
             if($duplicate_days) return response()->json(['message' => 'Hay días duplicados'], 400);
 
-            $user_classes = UserClass::byUserId($user->id)->get();
+            $user_classes = UserSchedule::byUserId($user->id)->get();
 
             if(!$user_classes->isEmpty()) {
                 foreach($user_classes as $user_class) {
@@ -84,7 +84,7 @@ class UserClassController extends Controller
                 $data = $request->except('days');
                 $data['day'] = $value;
                 $data['status'] = 1;
-                UserClass::create($data);
+                UserSchedule::create($data);
             }
 
         } catch (\Exception $e) {

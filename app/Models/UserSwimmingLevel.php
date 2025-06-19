@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class SwimmingCategoryUser extends Model
+class UserSwimmingLevel extends Model
 {
     /**
      * The attributes that are mass assignable.
@@ -13,7 +14,7 @@ class SwimmingCategoryUser extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'swimming_category_id',
+        'swimming_level_id',
         'user_id'
     ];
 
@@ -55,8 +56,24 @@ class SwimmingCategoryUser extends Model
      * identifier of a user in the system. It is used to filter the query results based on the
      * specified user's ID.
      */
-    public function scopeCategoryByUser(Builder $query, int $swimming_category_id, int $user_id): void
+    public function scopeCategoryByUser(Builder $query, int $swimming_level_id, int $user_id): void
     {
-        $query->where('swimming_category_id', $swimming_category_id)->where('user_id', $user_id);
+        $query->where('swimming_level_id', $swimming_level_id)->where('user_id', $user_id);
+    }
+
+    /**
+     * Get the user that owns the schedule.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the user that owns the swimming level.
+     */
+    public function swimmingLevel()
+    {
+        return $this->belongsTo(SwimmingLevel::class);
     }
 }

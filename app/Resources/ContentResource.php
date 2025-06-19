@@ -37,7 +37,7 @@ class ContentResource extends JsonResource
             'end_hour' => Carbon::parse($this->end_date)->format('H:i'),
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
-            'content_category_id' => $this->content_category_id,
+            'content_type_id' => $this->content_category_id,
             'created_at' => Carbon::parse($this->created_date)->format('Y-m-d')
         ];
     }

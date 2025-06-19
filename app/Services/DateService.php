@@ -7,22 +7,14 @@ use Carbon\Carbon;
 class DateService {
 
     /**
-     * The function `isBirthdateUser` checks if a given birthdate corresponds to today's date.
-     * 
-     * @param string birthdate The `isBirthdateUser` function takes a string parameter ``,
-     * which represents the birthdate of a user. The function uses the Carbon library to work with
-     * dates and determines if the given birthdate corresponds to today's date.
-     * 
-     * @return The function is checking if the provided birthdate is the same as today's date. It
-     * returns a boolean value indicating whether the provided birthdate matches today's date in terms
-     * of the day and month.
+     * Check if the given birthdate matches today's date (ignoring the year).
+     *
+     * @param string $birthdate The birthdate to check, formatted as 'Y-m-d'. Default is '1990-01-01'.
+     * @return bool Returns true if the birthdate's month and day match today's date; otherwise, false.
      */
-    public static function isBirthdateUser(string $birthdate = '1990-01-01'): string
+    public static function isBirthdateUser(string $birthdate = '1990-01-01'): bool
     {
-        $today = Carbon::today();
-        $format_birthdate = Carbon::parse($birthdate);
-
-        return $format_birthdate->isBirthday($today);
+        return Carbon::parse($birthdate)->isBirthday(Carbon::today());
     }
 
     /**

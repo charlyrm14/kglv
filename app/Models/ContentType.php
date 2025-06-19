@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserBiography extends Model
+class ContentType extends Model
 {
     /**
      * The attributes that are mass assignable.
@@ -12,7 +12,7 @@ class UserBiography extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'biography',
-        'user_id'
+        'title',
+        'slug'
     ];
 }

@@ -25,9 +25,9 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|min:3|max:50',
+            'first_name' => 'required|min:3|max:50',
             'last_name' => 'required|min:4|max:100',
-            'mothers_name' => 'required|min:4|max:100',
+            'mother_last_name' => 'required|min:4|max:100',
             'birth_date' => 'required|date_format:Y-m-d',
             'email' => 'required|email|unique:users|max:120',
             'role_id' => 'required|integer|exists:roles,id'

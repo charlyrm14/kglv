@@ -2,16 +2,13 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -26,9 +23,9 @@ class User extends Authenticatable implements JWTSubject
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
         'last_name',
-        'mothers_name',
+        'mother_last_name',
         'birth_date',
         'email',
         'phone_number',
@@ -59,6 +56,16 @@ class User extends Authenticatable implements JWTSubject
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Add custom attributes to the model's array and JSON representations.
+     *
+     * This ensures that the 'current_swimming_level' accessor is automatically
+     * included when the model is serialized.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = ['current_swimming_level'];
 
     /**
      * The "booted" method of the model.
@@ -111,14 +118,14 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * The `biography` function returns a `HasOne` relationship with the `UserBiography` model.
+     * The `biography` function returns a `HasMany` relationship with the `UserBiography` model.
      * 
-     * @return HasOne An instance of the `HasOne` relationship with the `UserBiography` model is being
+     * @return HasMany An instance of the `HasMany` relationship with the `UserBiography` model is being
      * returned.
      */
-    public function biography() : HasOne
+    public function profile() : HasMany
     {
-        return $this->hasOne(UserBiography::class);
+        return $this->hasMany(UserProfile::class);
     }
 
     /**
@@ -148,7 +155,7 @@ class User extends Authenticatable implements JWTSubject
      */
     public function scopeByEmail(Builder $query, string $email): void
     {
-        $query->select('id', 'name', 'last_name', 'mothers_name', 'email', 'role_id')->where('email', $email);
+        $query->select('id', 'first_name', 'last_name', 'mother_last_name', 'email', 'role_id')->where('email', $email);
     }
 
     /**
@@ -167,9 +174,9 @@ class User extends Authenticatable implements JWTSubject
 
         return static::select(
             'id',
-            'name',
+            'first_name',
             'last_name',
-            'mothers_name',
+            'mother_last_name',
             'birth_date'
         )
         ->whereRaw('MONTH(birth_date) = ? AND DAY(birth_date) = ?', [$today->month, $today->day])
@@ -188,9 +195,9 @@ class User extends Authenticatable implements JWTSubject
     {
         $query->select(
             'id', 
-            'name',
+            'first_name',
             'last_name',
-            'mothers_name',
+            'mother_last_name',
             'birth_date',
             'email',
             'phone_number',
@@ -199,11 +206,75 @@ class User extends Authenticatable implements JWTSubject
         );
     }
 
-    /**
-     * Get the classes that owns the user.
-     */
-    public function classes(): HasMany
+    public function scopeGetStudents(Builder $query): void
     {
-        return $this->hasMany(UserClass::class);
+        $query->select(
+            'id', 
+            'first_name',
+            'last_name',
+            'mother_last_name',
+            'birth_date',
+            'email',
+            'phone_number',
+            'user_code',
+            'role_id'
+        )->where('role_id', 3);
+    }
+
+    /**
+     * Get the user's class schedules that are currently active.
+     *
+     * This relationship returns only schedules where the 'status' is set to 1,
+     * meaning they are considered active.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function activeSchedules(): HasMany
+    {
+        return $this->hasMany(UserSchedule::class)->where('status', 1);
+    }
+
+    /**
+     * Get all swimming level records assigned to the user.
+     *
+     * This includes a relation to the corresponding 'swimmingLevel' model,
+     * which contains the level details (e.g., name, image, etc.).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function swimmingLevels(): HasMany
+    {
+        return $this->hasMany(UserSwimmingLevel::class)->with('swimmingLevel');
+    }
+
+    /**
+     * Accessor: Get the user's current (highest) swimming level.
+     *
+     * This accessor returns the `SwimmingLevel` model associated with the user's
+     * highest `swimming_level_id` from the `swimmingLevels` relationship.
+     *
+     * Requirements:
+     * - The `swimmingLevels` relation must be loaded.
+     * - At least one `UserSwimmingLevel` record must exist for the user.
+     *
+     * If these conditions are not met, it returns null.
+     *
+     * @return \App\Models\SwimmingLevel|null
+     */
+    public function getCurrentSwimmingLevelAttribute()
+    {
+        /**
+         * Valida que se haya cargado la relacion de swimmingLevels y que esta tenga registros
+         */
+        if ($this->relationLoaded('swimmingLevels') && $this->swimmingLevels->isNotEmpty()) {
+            /**
+             * Si hay registros obtiene el id mas alto para mostrarlo como
+             * el nivel actual
+             */
+            $current = $this->swimmingLevels->sortByDesc('swimming_level_id')->first();
+            return $current->swimmingLevel ?? NULL;
+        }
+
+        return NULL;
     }
 }

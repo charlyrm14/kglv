@@ -2,16 +2,16 @@
 
 namespace App\Exports;
 
-use App\Enums\StatusAssistance;
+use App\Enums\StatusAttendance;
 use App\Models\User;
 use App\Services\DateService;
-use App\Services\HelperService;
+use App\Services\UserService;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Illuminate\Support\Collection;
 
-class UserAssistanceExport implements FromCollection, WithHeadings
+class UserAttendanceExport implements FromCollection, WithHeadings
 {
     private User $user;
     private Collection $assistances;
@@ -33,9 +33,9 @@ class UserAssistanceExport implements FromCollection, WithHeadings
             $get_day = DateService::getDayByDate($assistance->created_at);
         
             $data[] = [
-                HelperService::getFullName($this->user),
+                UserService::getFullName($this->user),
                 $get_day,
-                StatusAssistance::from($assistance->assistance)->label(),
+                StatusAttendance::from($assistance->present)->label(),
                 Carbon::parse($assistance->created_at)->format('Y-m-d')
             ];
         }

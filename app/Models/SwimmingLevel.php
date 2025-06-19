@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
-class SwimmingCategory extends Model
+class SwimmingLevel extends Model
 {
     /**
      * The attributes that are mass assignable.
@@ -13,8 +13,9 @@ class SwimmingCategory extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'title',
-        'image'
+        'name',
+        'image',
+        'description'
     ];
 
     /**

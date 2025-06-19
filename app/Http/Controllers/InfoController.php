@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Resources\InfoResource;
 use Illuminate\Http\JsonResponse;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class InfoController extends Controller
 {
@@ -22,13 +23,13 @@ class InfoController extends Controller
      * 'data' key using the `InfoResource` resource class. If the user is not found, it will return a
      * JSON response with a 'Usuario no encontrado' message and a status code of 404. If an
      */
-    public function appInfo(int $user_id) : JsonResponse
+    public function appInfo(): JsonResponse
     {
         try {
 
-            $user = User::byId($user_id)->first();
-
-            if(!$user) return response()->json(['message' => 'Usuario no encontrado'], 404);
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['error' => 'Usuario no encontrado'], 404);
+            }
 
         } catch (\Exception $e) {
 
