@@ -7,6 +7,8 @@ use App\Http\Requests\AssignCategoryToUserRequest;
 use App\Models\SwimmingLevel;
 use App\Models\User;
 use App\Models\UserSwimmingLevel;
+use App\Resources\UserSwimmingProgressResource;
+use App\Services\SwimmingLevelService;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class SwimmingLevelController extends Controller
@@ -59,12 +61,21 @@ class SwimmingLevelController extends Controller
                 return response()->json(['error' => 'Usuario no encontrado'], 404);
             }
 
-            $swimming_levels = UserSwimmingLevel::categoriesByUser($user->id)->with('swimmingLevel')->get();
+            $user_levels = UserSwimmingLevel::categoriesByUser($user->id)->with('swimmingLevel')->get();
 
-            if($swimming_levels->isEmpty()) return response()->json(["message" => 'No se encontraron resultados'], 404);
+            if($user_levels->isEmpty()) {
+                return response()->json(["message" => 'No se encontraron resultados'], 404);
+            }
+
+            $completed_levels = (int)$user_levels->count();
+            $total_levels = (int)SwimmingLevel::totalLevels();
 
             // Obtiene el nivel más alto y hace la relación sobre swimmingLevel, de lo contrario retorna NULL
-            $current_level = $swimming_levels->sortByDesc('swimming_level_id')->first()->swimmingLevel ?? NULL;
+            $current_level = $user_levels->sortByDesc('swimming_level_id')->first()->swimmingLevel ?? NULL;
+
+            $progress_percentage = SwimmingLevelService::progressPercentage($completed_levels, $total_levels);
+            $remaining_levels = SwimmingLevelService::remainingLevels($completed_levels, $total_levels);
+            $next_level = SwimmingLevel::nextLevel($completed_levels, $total_levels);
 
         } catch (\Exception $e) {
 
@@ -72,10 +83,15 @@ class SwimmingLevelController extends Controller
         }
 
         return response()->json([
-            'data' => [
-                'current_level' => $current_level,
-                'swimming_levels' => $swimming_levels
-            ]
+            'data' => new UserSwimmingProgressResource(
+                $current_level,
+                $progress_percentage,
+                $user_levels,
+                $completed_levels,
+                $total_levels,
+                $remaining_levels,
+                $next_level
+            )
         ], 200); 
     }
 
@@ -98,19 +114,29 @@ class SwimmingLevelController extends Controller
     {
         try {
 
-            $total_categories_user = UserSwimmingLevel::categoriesByUser($request->user_id)->count();
-
-            if($total_categories_user >= SwimmingLevel::count()) {
+            $user_categories = UserSwimmingLevel::categoriesByUser($request->user_id)->get();
+            
+            if($user_categories->count() >= SwimmingLevel::totalLevels()) {
                 return response()->json(['message' => 'El estudiante ha alcanzado el nivel máximo de las categorías'], 400);
             }
 
-            $exist_category_user = UserSwimmingLevel::categoryByUser(
+            $category_already_assigned = UserSwimmingLevel::categoryByUser(
                 $request->swimming_level_id,
                 $request->user_id
             )->first();
 
-            if($exist_category_user) return response()->json(['message' => 'El estudiante ya tiene esta categoría asignada'], 400);
+            if($category_already_assigned){ 
+                return response()->json(['message' => 'El estudiante ya tiene esta categoría asignada'], 400);
+            }
+            
+            $current_level = $user_categories->sortByDesc('swimming_level_id')->first()->swimming_level_id ?? NULL;
 
+            $next_level = !is_null($current_level) ? SwimmingLevel::nextLevel($current_level)->id : SwimmingLevel::nextLevel(0)->id;
+
+            if($next_level !== $request->swimming_level_id) {
+                return response()->json(['message' => 'No se puede asignar un nivel mas alto al nivel actual'], 400);
+            }
+            
             UserSwimmingLevel::create($request->validated());
 
         } catch (\Exception $e) {
