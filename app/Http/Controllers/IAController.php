@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Http\Requests\ChatIARequest;
 use App\Models\ChatIA;
 use App\Services\APIService;
+use App\Services\PromptBuilderService;
 use Illuminate\Http\JsonResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -64,9 +65,9 @@ class IAController extends Controller
     {
         try {
 
-            $user = User::with(['profile'])->byId($request->user_id)->first();
-            
-            if(!$user) return response()->json(['message' => 'Usuario no encontrado'], 404);
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['error' => 'Usuario no encontrado'], 404);
+            }
 
             $users = User::with('profile')->get();
 
@@ -75,17 +76,7 @@ class IAController extends Controller
                 'users' => $users
             ];
 
-            $sanitizedContext = json_encode($context, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-
-            $prompt = "Eres un asistente especializado en deportes, con un enfoque profundo en natación. 
-            Responde preguntas sobre natación, entrenamiento, técnicas, campeonatos, logros y biografías deportivas.
-            rinda información sobre personas de la escuela de natación (maestros, alumnos, usuario actual), pero **no reveles datos sensibles** como contraseñas, correos electrónicos, teléfonos, direcciones o información privada.
-            Si la pregunta no está relacionada con natación, deportes o la comunidad escolar, responde amablemente que no puedes ayudar con ese tema.
-            Mantén un estilo claro, profesional, amigable y enfocado.
-            No inventes información; responde solo con lo que está en el contexto\n
-            Contexto:\n" . $sanitizedContext. "\n
-            Pregunta: $request->message\n
-            Respuesta:";
+            $prompt = PromptBuilderService::buildChatPrompt($context, $request->message);
 
             $query_api = new APIService();
             $response_ia = $query_api->ia($prompt);

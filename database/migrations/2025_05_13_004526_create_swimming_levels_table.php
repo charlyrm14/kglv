@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name', 30);
             $table->string('image', 150)->nullable();
+            $table->string('skill_1', 50);
+            $table->string('skill_2', 50);
+            $table->string('skill_3', 50);
             $table->text('description');
             $table->timestamps();
         });

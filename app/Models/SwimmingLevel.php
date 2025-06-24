@@ -15,6 +15,9 @@ class SwimmingLevel extends Model
     protected $fillable = [
         'name',
         'image',
+        'skill_1',
+        'skill_2',
+        'skill_3',
         'description'
     ];
 
@@ -31,5 +34,35 @@ class SwimmingLevel extends Model
     public function scopeCategoryById(Builder $query, int $category_id): void
     {
         $query->where('id', $category_id);
+    }
+
+    /**
+     * Get the total number of swimming levels available in the system.
+     *
+     * @return int The total count of swimming levels.
+     */
+    public static function totalLevels(): int
+    {
+        return static::count();
+    }
+
+    /**
+     * Retrieve the next swimming level based on the user's current level.
+     *
+     * If the user has already completed all available levels,
+     * the function will return null.
+     *
+     * @param int $user_current_level The number representing the user's current level count.
+     * @return SwimmingLevel|null The next SwimmingLevel instance or null if the user has reached the maximum level.
+     */
+    public static function nextLevel(int $user_current_level): ?SwimmingLevel
+    {        
+        $total_levels = self::count();
+
+        if ($user_current_level >= $total_levels) {
+            return null;
+        }
+
+        return static::where('id', $user_current_level + 1)->first();
     }
 }

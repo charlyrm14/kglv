@@ -3,7 +3,6 @@
 namespace App\Resources;
 
 use App\Models\Content;
-use App\Models\User;
 use App\Services\DateService;
 use App\Services\UserService;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -33,11 +32,7 @@ class InfoResource extends JsonResource {
             'mother_last_name' => $this->mother_last_name,
             'birth_date' => $this->birth_date,
             'is_birthdate' => DateService::isBirthdateUser($this->birth_date),
-            'age' => DateService::userAge($this->birth_date),
-            'featured_users' => User::getStudents()->get(),
-            'users_birthdate' => UserService::getUsersWithBirthdayToday(),
-            'last_notice' => Content::getLastContentType(1),
-            'last_event' => Content::getLastContentType(2)
+            'age' => DateService::userAge($this->birth_date)
         ];
     }
 }

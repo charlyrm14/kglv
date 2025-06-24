@@ -32,7 +32,7 @@ Route::prefix('v1/')->group(function () {
     })->middleware('jwt.verify');
 
     Route::prefix('info/')->controller(InfoController::class)->group(function () {
-        Route::get('{user_id}', 'appInfo')->middleware('jwt.verify');
+        Route::get('', 'appInfo')->middleware('jwt.verify');
     });
 
     Route::prefix('users/')->controller(UserController::class)->group(function () {
@@ -79,7 +79,7 @@ Route::prefix('v1/')->group(function () {
 
     Route::prefix('ia/')->controller(IAController::class)->group(function() {
         Route::get('chat/history', 'conversationByUser')->middleware('jwt.verify');
-        Route::post('chat', 'chatIA');
+        Route::post('chat', 'chatIA')->middleware('jwt.verify');;
     });
 
     Route::prefix('file/')->controller(FileController::class)->group(function() {
