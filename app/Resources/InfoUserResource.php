@@ -2,10 +2,10 @@
 
 namespace App\Resources;
 
-use App\Services\DateService;
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class InfoResource extends JsonResource {
+class InfoUserResource extends JsonResource {
 
     
     /**
@@ -28,9 +28,14 @@ class InfoResource extends JsonResource {
             'mother_last_name' => $this->mother_last_name,
             'birth_date' => $this->birth_date,
             'email' => $this->email,
-            'is_birthdate' => DateService::isBirthdateUser($this->birth_date),
-            'age' => DateService::userAge($this->birth_date),
-            'current_level' => $this->swimmingLevels->sortByDesc('swimming_level_id')->first()
+            'phone_number' => $this->phone_number,
+            'user_code' => $this->user_code,
+            'role_id' => $this->role_id,
+            'created_at' => Carbon::parse($this->created_at)->format('Y-m-d'),
+            'current_swimming_level' => $this->current_swimming_level,
+            'role' => $this->role,
+            'active_schedules' => $this->activeSchedules,
+            'swimming_levels' => $this->swimmingLevels
         ];
     }
 }

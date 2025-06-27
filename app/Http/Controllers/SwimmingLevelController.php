@@ -26,7 +26,7 @@ class SwimmingLevelController extends Controller
     {
         try {
             
-            $categories = SwimmingLevel::all();
+            $categories = SwimmingLevel::orderByDesc('id')->get();
 
             if($categories->isEmpty()) return response()->json(["message" => 'No se encontraron resultados'], 404);
 

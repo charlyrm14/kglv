@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Resources\InfoResource;
 use Illuminate\Http\JsonResponse;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -30,6 +29,8 @@ class InfoController extends Controller
             if (!$user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json(['error' => 'Usuario no encontrado'], 404);
             }
+
+            $user->load('swimmingLevels');
 
         } catch (\Exception $e) {
 

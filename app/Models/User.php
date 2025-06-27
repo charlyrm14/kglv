@@ -203,7 +203,7 @@ class User extends Authenticatable implements JWTSubject
             'phone_number',
             'user_code',
             'role_id'
-        );
+        )->orderByDesc('id');
     }
 
     public function scopeGetStudents(Builder $query): void

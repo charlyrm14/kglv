@@ -71,12 +71,7 @@ class IAController extends Controller
 
             $users = User::with('profile')->get();
 
-            $context = [
-                'user' => $user,
-                'users' => $users
-            ];
-
-            $prompt = PromptBuilderService::buildChatPrompt($context, $request->message);
+            $prompt = PromptBuilderService::buildChatPrompt($user, $users, $request->message);
 
             $query_api = new APIService();
             $response_ia = $query_api->ia($prompt);

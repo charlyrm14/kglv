@@ -9,6 +9,8 @@ use App\Services\PasswordService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\UserRegisteredMail;
+use App\Resources\InfoUserResource;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
@@ -96,6 +98,7 @@ class UserController extends Controller
         try {
 
             $user = User::ById($user_id)->with([
+                'role',
                 'activeSchedules', 
                 'swimmingLevels.swimmingLevel'
             ])->first();
@@ -108,7 +111,7 @@ class UserController extends Controller
         }
 
         return response()->json([
-            'data' => $user
+            'data' => new InfoUserResource($user)
         ], 200);
     }
 
@@ -156,14 +159,24 @@ class UserController extends Controller
     public function delete(int $user_id): JsonResponse
     {
         try {
+
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['error' => 'Usuario no encontrado'], 404);
+            }
+
+            if($user->role_id !== 1) {
+                return response()->json(['message' => 'Forbidden'], 403);
+            }
             
-            $user = User::byId($user_id)->first();
+            $user_to_delete = User::byId($user_id)->first();
 
-            if(!$user) return response()->json(['message' => 'Usuario no encontrado'], 404);
+            if(!$user_to_delete) return response()->json(['message' => 'Usuario no encontrado'], 404);
 
-            if($user->id === 1 || $user->id === 2) return response()->json(['message' => 'No se puede procesar esta solicitud'], 401);
+            if($user->id === $user_id || in_array($user_to_delete->id, [1, 2])) {
+                return response()->json(['message' => 'No se puede procesar esta solicitud'], 401);
+            }
 
-            $user->delete();
+            $user_to_delete->delete();
 
         } catch (\Exception $e) {
 
