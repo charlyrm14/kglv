@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ContentType extends Model
 {
@@ -15,4 +16,12 @@ class ContentType extends Model
         'title',
         'slug'
     ];
+
+    /**
+     * Get the post that owns the comment.
+     */
+    public function content(): HasMany
+    {
+        return $this->hasMany(Content::class);
+    }
 }

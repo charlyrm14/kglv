@@ -52,7 +52,7 @@ class Content extends Model
     /**
      * Get the post that owns the comment.
      */
-    public function contentCategory(): BelongsTo
+    public function contentType(): BelongsTo
     {
         return $this->belongsTo(ContentType::class);
     }
@@ -106,7 +106,7 @@ class Content extends Model
      * @return The function `getContBySlug` is returning the first record from the database where the
      * `slug` column matches the provided `` parameter.
      */
-    public static function getContBySlug(string $slug)
+    public static function getContentBySlug(string $slug)
     {
         return static::where('slug', $slug)->first();
     }

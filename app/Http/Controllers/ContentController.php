@@ -23,7 +23,7 @@ class ContentController extends Controller
      *   only active content items (where 'active' = 1) are returned.
      * - Admin users (role ID = 1) receive all content items regardless of their active status.
      * 
-     * The content items are loaded along with their associated 'contentCategory' relationship.
+     * The content items are loaded along with their associated 'contentType' relationship.
      * 
      * In case of any unexpected exceptions during execution, a 500 server error response is returned.
      * 
@@ -43,7 +43,7 @@ class ContentController extends Controller
                 $query->where('active', 1);
             } 
 
-            $contents = $query->with('contentCategory')->get();
+            $contents = $query->with('contentType')->orderByDesc('id')->get();
 
             if($contents->isEmpty()) return response()->json(['message' => 'No se encontraron resultados'], 404);
 
@@ -75,9 +75,11 @@ class ContentController extends Controller
     {
         try {
 
-            $content = Content::getContBySlug($slug);
+            $content = Content::getContentBySlug($slug);
             
             if(!$content) return response()->json(['message' => 'Recurso no encontrado'], 404);
+
+            $content->load('contentType');
 
         } catch (\Exception $e) {
             
@@ -109,7 +111,7 @@ class ContentController extends Controller
     {
         try {
 
-            $content = Content::getContBySlug($slug);
+            $content = Content::getContentBySlug($slug);
             
             if(!$content) return response()->json(['message' => 'Recurso no encontrado'], 404);
 
@@ -152,7 +154,7 @@ class ContentController extends Controller
     {
         try {
 
-            $content = Content::getContBySlug($slug);
+            $content = Content::getContentBySlug($slug);
             
             if(!$content) return response()->json(['message' => 'Recurso no encontrado'], 404);
 
