@@ -40,6 +40,8 @@ Route::prefix('v1/')->group(function () {
         Route::post('', 'create');
         Route::get('{user_id}', 'show');
         Route::get('search/{email}', 'searchByEmail');
+        Route::get('by-role/{role}', 'usersByRole')->middleware('jwt.verify');
+        Route::get('birthday/today', 'birthdayUsers')->middleware('jwt.verify');
         Route::delete('{user_id}', 'delete')->middleware('jwt.verify');
     });
 

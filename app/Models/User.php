@@ -125,7 +125,7 @@ class User extends Authenticatable implements JWTSubject
      */
     public function profile() : HasMany
     {
-        return $this->hasMany(UserProfile::class);
+        return $this->hasMany(UserProfile::class)->where('visible_to', 'public');
     }
 
     /**
@@ -184,6 +184,32 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Get all users whose birthday is today (matching current day and month).
+     *
+     * This method performs a query to select users whose birth_date 
+     * matches today's day and month. It also eagerly loads the 'profile' 
+     * relationship to minimize database queries.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public static function todayBirthdayUsers()
+    {
+        $today = now();
+
+        return static::with('profile')->select(
+            'id',
+            'first_name',
+            'last_name',
+            'mother_last_name',
+            'birth_date',
+            'role_id'
+        )
+        ->whereDay('birth_date', $today->day)
+        ->whereMonth('birth_date', $today->month)
+        ->get();
+    }
+
+    /**
      * The function `scopeUsersWithRole` selects specific columns from the users table and eager loads
      * the associated role relationship.
      * 
@@ -206,6 +232,15 @@ class User extends Authenticatable implements JWTSubject
         )->orderByDesc('id');
     }
 
+    /**
+     * Scope a query to only include users with the "student" role (role_id = 3).
+     *
+     * This query selects specific user fields and filters the results 
+     * to only include users whose role ID matches the student role.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return void
+     */
     public function scopeGetStudents(Builder $query): void
     {
         $query->select(

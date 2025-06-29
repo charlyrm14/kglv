@@ -9,7 +9,9 @@ use App\Services\PasswordService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\UserRegisteredMail;
+use App\Models\Role;
 use App\Resources\InfoUserResource;
+use App\Services\DateService;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
@@ -142,6 +144,86 @@ class UserController extends Controller
         return response()->json([
             'data' => $user
         ], 200);
+    }
+
+    /**
+     * Retrieve users by role, including their profiles.
+     *
+     * This method fetches a role using the specified role name and retrieves
+     * all users associated with that role, including their related profile data.
+     * 
+     * - If the role is not found, or if the role ID is `1` (commonly reserved for admins),
+     *   it returns a 404 JSON response.
+     * - If an exception occurs during the process, it returns a 500 error response.
+     *
+     * @param string $role The role slug or name to filter users by.
+     *
+     * @return \Illuminate\Http\JsonResponse JSON response containing users and profiles,
+     * or an error message with appropriate status code.
+     */
+    public function usersByRole(string $role)
+    {
+        try {
+            
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['error' => 'Usuario no encontrado'], 404);
+            }
+
+            $roleData = Role::TeachersAndStudents($role)->first();
+            
+            if(!$roleData || ($roleData && $roleData->id === 1)) {
+                return response()->json(['message' => 'Recurso no encontrado'], 404);
+            }
+
+            $roleData->load('users.profile');
+
+            return response()->json([
+                'data' => $roleData
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json(["error" => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Retrieve and return a list of users whose birthday is today.
+     *
+     * This method authenticates the user via JWT, fetches users 
+     * whose birth date matches today's day and month, and calculates 
+     * their age using the DateService. If no users are found, it returns 
+     * a 404 response. Otherwise, it returns the list of users with their 
+     * associated profile and computed age.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function birthdayUsers()
+    {
+        try {
+
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['message' => 'Usuario no encontrado'], 404);
+            }
+
+            $users = User::todayBirthdayUsers();
+
+            if($users->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron resultados'], 404);
+            }
+
+            $users->each(function($userData) {
+                $userData->age = DateService::userAge($userData->birth_date);
+            });
+
+            return response()->json([
+                'data' => $users
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json(["error" => $e->getMessage()], 500);
+        }
     }
 
     /**
