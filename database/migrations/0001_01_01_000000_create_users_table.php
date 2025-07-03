@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('birth_date');
             $table->string('email')->unique();
             $table->string('phone_number', 12)->nullable();
+            $table->string('profile_image')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('user_code', 20);
             $table->string('password');
