@@ -13,6 +13,9 @@ use App\Models\Role;
 use App\Resources\InfoUserResource;
 use App\Services\DateService;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Http\Requests\UpdateUserRequest;
+use App\Services\UserService;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UserController extends Controller
 {
@@ -219,6 +222,48 @@ class UserController extends Controller
             return response()->json([
                 'data' => $users
             ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json(["error" => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * The function updates user data, checks for existing email, and returns a JSON response with
+     * success message and updated user information.
+     * 
+     * @param UpdateUserRequest request The `update` function you provided seems to be handling the
+     * update of user information based on the `UpdateUserRequest` request. Let's break down the logic:
+     * 
+     * @return The `update` function is returning a JSON response with the following structure:
+     * - If the user is not found, it returns a 404 response with a message 'Usuario no encontrado'.
+     * - If there is already a user with the email provided in the request, it returns a 422 response
+     * with a message 'Ya existe un usuario con el correo proporcionado'.
+     * - If the email in the request is
+     */
+    public function update(UpdateUserRequest $request)
+    {
+        try {
+
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['message' => 'Usuario no encontrado'], 404);
+            }
+
+            UserService::checkExistsEmail($request->email, $user->email);
+
+            $change_password = $request->email !== $user->email ? true : false;
+            $user->update($request->validated());
+            
+            return response()->json([
+                'message' => 'Datos actualizados con éxito',
+                'change_email' => $change_password,
+                'data' => $user
+            ], 200);
+
+        } catch (HttpResponseException $e) {
+            // Re-lanzamos para que Laravel maneje correctamente el JSON que ya viene en la excepción
+            throw $e;
 
         } catch (\Exception $e) {
 

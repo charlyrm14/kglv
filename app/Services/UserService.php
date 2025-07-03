@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UserService {
 
@@ -40,5 +41,24 @@ class UserService {
             $user->age = DateService::userAge($user->birth_date);
             return $user;
         });
+    }
+
+    /**
+     * The function `checkExistsEmail` compares a request email with a user email and throws an
+     * exception if a user with the request email already exists.
+     * @param string request_email The `request_email` parameter is the email that is being checked for
+     * existence in the system. It is the email that a user is trying to use or update.
+     * @param string user_email The `user_email` parameter in the `checkExistsEmail` function
+     * represents the email address of a user that is being compared with the `request_email`
+     * parameter. The function checks if the `request_email` is different from the `user_email` and if
+     * there is already a user with the same
+     */
+    public static function checkExistsEmail(string $request_email, string $user_email): void
+    {
+        if($request_email !== $user_email && User::byEmail($request_email)->first()) {
+            throw new HttpResponseException(response()->json([
+                'message' => 'El correo electrónico ingresado ya está registrado en otro usuario'
+            ], 422));
+        }
     }
 }
