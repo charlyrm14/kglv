@@ -13,6 +13,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class ContentController extends Controller
 {
     private $default_cover_image = 'uploads/swimming-categories/swimmer.png';
+    private $tips_contents = [1,2,3,4,5,6];
 
     /**
      * Retrieves a list of content items based on the authenticated user's role.
@@ -37,24 +38,49 @@ class ContentController extends Controller
                 return response()->json(['error' => 'Usuario no encontrado'], 404);
             }
 
-            $query = Content::query();
+            $query = Content::query()->whereNotIn('id', $this->tips_contents);
 
             if( (int) $user->role_id !== 1) {
                 $query->where('active', 1);
-            } 
+            }
 
             $contents = $query->with('contentType')->orderByDesc('id')->get();
 
-            if($contents->isEmpty()) return response()->json(['message' => 'No se encontraron resultados'], 404);
+            if($contents->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron resultados'], 404);
+            }
+
+            return response()->json([
+                'data' => $contents
+            ], 200);
 
         } catch (\Exception $e) {
             
             return response()->json(["error" => 'Error del servidor'], 500);
         }
+    }
 
-        return response()->json([
-            'data' => $contents
-        ], 200);
+    /* The `public function getTipsContent()` method in the `ContentController` class is responsible
+    for retrieving a specific set of content items referred to as "tips" based on predefined tip
+    content IDs stored in the `` property of the class. */
+    public function getTipsContent(): JsonResponse
+    {
+        try {
+            
+            $tips = Content::whereIn('id', $this->tips_contents)->get();
+
+            if($tips->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron resultados'], 404);
+            }
+
+            return response()->json([
+                'data' => $tips
+            ], 200);
+
+        } catch (\Exception $e) {
+            
+            return response()->json(["error" => 'Error del servidor'], 500);
+        }
     }
 
     /**
@@ -156,7 +182,9 @@ class ContentController extends Controller
 
             $content = Content::getContentBySlug($slug);
             
-            if(!$content) return response()->json(['message' => 'Recurso no encontrado'], 404);
+            if(!$content) {
+                return response()->json(['message' => 'Recurso no encontrado'], 404);
+            }
 
             if($content->cover_image !== $this->default_cover_image) {
                 FileService::deleteFile($content->cover_image);
@@ -171,6 +199,6 @@ class ContentController extends Controller
 
         return response()->json([
             'message' => 'Contenido eliminado con éxito'
-        ], 200); 
+        ], 200);
     }
 }

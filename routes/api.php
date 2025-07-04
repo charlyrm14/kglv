@@ -56,16 +56,19 @@ Route::prefix('v1/')->group(function () {
     Route::prefix('contents/')->group(function() {
 
         Route::get('', [ContentController::class, 'index'])->middleware('jwt.verify');
+        Route::get('tips', [ContentController::class, 'getTipsContent']);
         Route::get('{slug}/detail', [ContentController::class, 'show']);
         Route::delete('{slug}', [ContentController::class, 'delete']);
         Route::patch('{slug}/status', [ContentController::class, 'updateStatus']);
 
         Route::prefix('events/')->controller(EventController::class)->group(function() {
             Route::post('', 'create');
+            Route::put('{slug}', 'update');
         });
 
         Route::prefix('notice/')->controller(NoticeController::class)->group(function() {
             Route::post('', 'create');
+            Route::put('{slug}', 'update');
         });
     });
 
