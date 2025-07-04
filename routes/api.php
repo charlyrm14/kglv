@@ -43,6 +43,7 @@ Route::prefix('v1/')->group(function () {
         Route::get('by-role/{role}', 'usersByRole')->middleware('jwt.verify');
         Route::get('birthday/today', 'birthdayUsers')->middleware('jwt.verify');
         Route::put('', 'update')->middleware('jwt.verify');
+        Route::put('upload-image-profile', 'uploadImageProfile')->middleware('jwt.verify');
         Route::delete('{user_id}', 'delete')->middleware('jwt.verify');
     });
 

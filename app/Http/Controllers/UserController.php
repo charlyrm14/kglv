@@ -16,6 +16,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Requests\UpdateUserRequest;
 use App\Services\UserService;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Http\Requests\UpdateProfileImageRequest;
 
 class UserController extends Controller
 {
@@ -264,6 +265,43 @@ class UserController extends Controller
         } catch (HttpResponseException $e) {
             // Re-lanzamos para que Laravel maneje correctamente el JSON que ya viene en la excepción
             throw $e;
+
+        } catch (\Exception $e) {
+
+            return response()->json(["error" => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * The function `uploadImageProfile` updates the profile image of a user and returns a success
+     * message or an error message if an exception occurs.
+     * 
+     * @param UpdateProfileImageRequest request The `uploadImageProfile` function is responsible for
+     * updating the profile image of a user based on the request data. Here's a breakdown of the
+     * function and its parameters:
+     * 
+     * @return If the user is successfully authenticated and the profile image is updated successfully,
+     * a JSON response with the message 'Imagen de perfil actualizada con éxito' and status code 200 is
+     * returned. If there is an error during the process, a JSON response with the error message from
+     * the exception is returned with a status code of 500. If the user is not found, a JSON response
+     * with the message '
+     */
+    public function uploadImageProfile(UpdateProfileImageRequest $request)
+    {
+        try {
+
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
+                return response()->json(['message' => 'Usuario no encontrado'], 404);
+            }
+
+            $user->update($request->validated());
+
+            return response()->json([
+                'message' => 'Imagen de perfil actualizada con éxito',
+                'data' => [
+                    'profile_image' => $user->profile_image
+                ]
+            ], 200);
 
         } catch (\Exception $e) {
 

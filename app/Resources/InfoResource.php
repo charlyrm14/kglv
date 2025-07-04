@@ -28,6 +28,7 @@ class InfoResource extends JsonResource {
             'mother_last_name' => $this->mother_last_name,
             'birth_date' => $this->birth_date,
             'email' => $this->email,
+            'profile_image' => $this->profile_image,
             'is_birthdate' => DateService::isBirthdateUser($this->birth_date),
             'age' => DateService::userAge($this->birth_date),
             'current_level' => $this->swimmingLevels->sortByDesc('swimming_level_id')->first()
