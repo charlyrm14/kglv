@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 
-class FileService 
+class FileService
 {
     /**
      * Store an uploaded file in the public/uploads directory using a hashed name.
@@ -34,7 +34,7 @@ class FileService
         } catch (\Exception $e) {
 
             return null;
-        }   
+        }
 
         return $folder . $file_name;
     }
@@ -50,8 +50,10 @@ class FileService
      * @return \Illuminate\Http\JsonResponse
      */
     public static function deleteFile(string $file_path): bool
-    {        
-        if (!File::exists($file_path)) return false;
+    {
+        if (!File::exists($file_path)) {
+            return false;
+        }
 
         File::delete($file_path);
 

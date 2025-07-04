@@ -108,6 +108,6 @@ class Content extends Model
      */
     public static function getContentBySlug(string $slug)
     {
-        return static::where('slug', $slug)->first();
+        return static::where('slug', $slug)->whereNotIn('id', [1,2,3,4,5,6])->first();
     }
 }

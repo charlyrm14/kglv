@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 
-class StoreNoticeRequest extends FormRequest
+class UpdateNoticeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -31,26 +31,6 @@ class StoreNoticeRequest extends FormRequest
         ];
     }
 
-    /**
-     * Prepare the data for validation.
-     *
-     * This method is automatically called before the validation rules are applied.
-     * It checks whether the 'cover_image' field is present in the request input and not null.
-     * If the field is missing or its value is null, a default value is assigned.
-     *
-     * Default value assigned:
-     * - 'cover_image' => 'uploads/swimming-categories/swimmer.png'
-     *
-     * This ensures that a valid value for 'cover_image' is always available during validation or processing.
-     *
-     * @return void
-     */
-    public function prepareForValidation(): void
-    {
-        $this->merge([
-            'cover_image' => $this->input('cover_image') ?? 'uploads/swimming-categories/swimmer.png',
-        ]);
-    }
 
     /**
      * This function throws an exception with a JSON response containing validation errors.

@@ -26,5 +26,12 @@ class ContentTypeSeeder extends Seeder
             'title' => 'Eventos',
             'slug' => 'eventos'
         ]);
+
+        ContentType::updateOrCreate([
+            'title' => 'Tips'
+        ], [
+            'title' => 'Tips',
+            'slug' => 'tips'
+        ]);
     }
 }

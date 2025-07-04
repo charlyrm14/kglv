@@ -15,7 +15,8 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             UserSeeder::class,
             ContentTypeSeeder::class,
-            SwimmingLevelSeeder::class
+            SwimmingLevelSeeder::class,
+            ContentSeeder::class
         ]);
     }
 }

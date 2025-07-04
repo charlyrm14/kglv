@@ -27,7 +27,7 @@ class StoreEventRequest extends FormRequest
         return [
             'title' => 'required|min:5|max:120',
             'content' => 'required',
-            'cover_image' => 'nullable',
+            'cover_image' => 'nullable|string|max:255',
             'location' => 'required|string|min:10|max:120',
             'start_date' => [
                 'required',
