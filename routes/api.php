@@ -77,6 +77,7 @@ Route::prefix('v1/')->group(function () {
         Route::get('', 'index');
         Route::get('user', 'byUser')->middleware('jwt.verify');
         Route::post('assign-to-user', 'assignToUser');
+        Route::put('{level_id}', 'updateLevel');
     });
 
     Route::prefix('schedules/')->controller(UserScheduleController::class)->group(function() {

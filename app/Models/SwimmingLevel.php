@@ -56,7 +56,7 @@ class SwimmingLevel extends Model
      * @return SwimmingLevel|null The next SwimmingLevel instance or null if the user has reached the maximum level.
      */
     public static function nextLevel(int $user_current_level): ?SwimmingLevel
-    {        
+    {
         $total_levels = self::count();
 
         if ($user_current_level >= $total_levels) {

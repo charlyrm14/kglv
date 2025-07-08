@@ -35,7 +35,9 @@ class PasswordController extends Controller
     {
         $user = User::byEmail($request->email)->first();
 
-        if(!$user) return response()->json(['message' => 'Usuario no encontrado'], 404);
+        if(!$user) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
 
         try {
 
@@ -116,7 +118,9 @@ class PasswordController extends Controller
 
             $user = User::byEmail($request->email)->first();
 
-            if(!$user) return response()->json(['message' => 'Usuario no encontrado'], 404);
+            if(!$user) {
+                return response()->json(['message' => 'Usuario no encontrado'], 404);
+            }
 
             $user->password = $request->password;
             $user->save();
