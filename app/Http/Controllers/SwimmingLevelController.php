@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\AssignCategoryToUserRequest;
+use App\Http\Requests\UpdateSwimmingLevelRequest;
 use App\Models\SwimmingLevel;
 use App\Models\User;
 use App\Models\UserSwimmingLevel;
@@ -28,7 +29,9 @@ class SwimmingLevelController extends Controller
             
             $categories = SwimmingLevel::orderByDesc('id')->get();
 
-            if($categories->isEmpty()) return response()->json(["message" => 'No se encontraron resultados'], 404);
+            if($categories->isEmpty()) {
+                return response()->json(["message" => 'No se encontraron resultados'], 404);
+            }
 
         } catch (\Exception $e) {
 
@@ -37,7 +40,7 @@ class SwimmingLevelController extends Controller
 
         return response()->json([
             'data' => $categories
-        ], 200); 
+        ], 200);
     }
 
     /**
@@ -147,5 +150,46 @@ class SwimmingLevelController extends Controller
         return response()->json([
             'message' => 'Categoría asignada a usuario con éxito'
         ], 201);
+    }
+
+    /**
+     * This PHP function updates a swimming level based on the provided request data and returns a JSON
+     * response with success or error messages.
+     * 
+     * @param UpdateSwimmingLevelRequest request The `updateLevel` function you provided is responsible
+     * for updating a swimming level based on the given `UpdateSwimmingLevelRequest` and the
+     * `level_id`.
+     * @param int level_id The `level_id` parameter in the `updateLevel` function represents the unique
+     * identifier of the swimming level that you want to update. This parameter is used to fetch the
+     * specific swimming level from the database based on its ID so that it can be updated with the new
+     * data provided in the `UpdateSw
+     * 
+     * @return The `updateLevel` function is returning a JSON response. If the swimming level with the
+     * specified ID is found, it updates the level with the validated data from the request and returns
+     * a success message along with the updated level data. If the level is not found, it returns a 404
+     * status code with a message indicating that the resource was not found. If an exception occurs
+     * during the update process,
+     */
+    public function updateLevel(UpdateSwimmingLevelRequest $request, int $level_id)
+    {
+        $level = SwimmingLevel::categoryById($level_id)->first();
+        
+        if(!$level) {
+            return response()->json(['message' => 'Recurso no encontrado'], 404);
+        }
+
+        try {
+            
+            $level->update($request->validated());
+
+            return response()->json([
+                'message' => 'Nivel actualizado con éxito',
+                'data' => $level
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json(["error" => 'Error del servidor'], 500);
+        }
     }
 }

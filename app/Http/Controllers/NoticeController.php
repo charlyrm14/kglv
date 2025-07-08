@@ -11,7 +11,7 @@ use App\Services\ContentService;
 use App\Services\FileService;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class NoticeController extends Controller
+class NoticeController extends ContentController
 {
     /**
      * The function creates a new event using validated data from a request, dispatches a notification
@@ -79,7 +79,7 @@ class NoticeController extends Controller
 
             ContentService::checkContentType($notice->content_type_id, 1);
             
-            if($notice->cover_image !== $request->cover_image) {
+            if($notice->cover_image !== $this->default_cover_image) {
                 FileService::deleteFile($notice->cover_image);
             }
 

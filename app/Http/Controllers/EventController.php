@@ -9,8 +9,9 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Requests\UpdateEventRequest;
 use App\Services\ContentService;
 use App\Services\FileService;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
-class EventController extends Controller
+class EventController extends ContentController
 {
     /**
      * The function creates a new event using validated data from a request, dispatches a notification
@@ -77,16 +78,20 @@ class EventController extends Controller
 
             ContentService::checkContentType($event->content_type_id, 2);
 
-            if($event->cover_image !== $request->cover_image) {
+            if($event->cover_image !== $this->default_cover_image) {
                 FileService::deleteFile($event->cover_image);
             }
-
+            
             $event->update($request->validated());
 
             return response()->json([
                 'message' => 'Evento actualizado con éxito',
                 'data' => $event
             ], 200);
+
+        } catch (HttpResponseException $e) {
+            // Re-lanzamos para que Laravel maneje correctamente el JSON que ya viene en la excepción
+            throw $e;
 
         } catch (\Exception $e) {
 

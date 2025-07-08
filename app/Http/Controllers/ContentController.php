@@ -12,7 +12,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ContentController extends Controller
 {
-    private $default_cover_image = 'uploads/swimming-categories/swimmer.png';
+    protected $default_cover_image = 'uploads/swimming-categories/swimmer.png';
     private $tips_contents = [1,2,3,4,5,6];
 
     /**
@@ -103,7 +103,9 @@ class ContentController extends Controller
 
             $content = Content::getContentBySlug($slug);
             
-            if(!$content) return response()->json(['message' => 'Recurso no encontrado'], 404);
+            if(!$content) {
+                return response()->json(['message' => 'Recurso no encontrado'], 404);
+            }
 
             $content->load('contentType');
 
@@ -139,7 +141,9 @@ class ContentController extends Controller
 
             $content = Content::getContentBySlug($slug);
             
-            if(!$content) return response()->json(['message' => 'Recurso no encontrado'], 404);
+            if(!$content) {
+                return response()->json(['message' => 'Recurso no encontrado'], 404);
+            }
 
             $content->active = $request->active;
             $content->save();
