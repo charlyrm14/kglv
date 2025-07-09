@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserProfileInformationRequest;
 use App\Http\Requests\UpdateUserProfileInformationRequest;
+use App\Models\User;
 use App\Models\UserProfile;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
@@ -13,6 +14,37 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UserProfileController extends Controller
 {
+    /**
+     * This PHP function retrieves and returns the profile information of a user by their ID.
+     * 
+     * @param int id The `id` parameter in the `userProfileInfo` function is used to specify the user
+     * for which you want to retrieve the profile information. This function takes an integer `` as
+     * input, which is the unique identifier of the user whose profile information you want to fetch.
+     * 
+     * @return A JSON response containing the user's profile information is being returned. If the user
+     * is not found, a JSON response with a message "Usuario no encontrado" and a status code of 404 is
+     * returned.
+     */
+    public function userProfileInfo(int $id): JsonResponse
+    {
+        $user = User::with('profile')->byId($id)->first();
+
+        try {
+
+            if(!$user) {
+                return response()->json(['message' => 'Usuario no encontrado'], 404);
+            }
+
+            return response()->json([
+                'data' => $user
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json(["error" => 'Error del servidor'], 500);
+        }
+    }
+
     /**
      * The function `assignProfileInfo` assigns user profile information and handles exceptions by
      * returning appropriate JSON responses.
