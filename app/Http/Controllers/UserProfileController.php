@@ -8,6 +8,7 @@ use App\Http\Requests\StoreUserProfileInformationRequest;
 use App\Http\Requests\UpdateUserProfileInformationRequest;
 use App\Models\User;
 use App\Models\UserProfile;
+use App\Resources\UserProfileInfoResource;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -36,7 +37,7 @@ class UserProfileController extends Controller
             }
 
             return response()->json([
-                'data' => $user
+                'data' => new UserProfileInfoResource($user)
             ], 200);
 
         } catch (\Exception $e) {
