@@ -61,4 +61,49 @@ class UserService {
             ], 422));
         }
     }
+
+    /**
+     * The function `validateProfileTypeLimit` checks if a user has reached the maximum limit for a
+     * specific profile type and throws an exception if the limit is exceeded.
+     * 
+     * @param Collection user_profiles The `user_profiles` parameter is expected to be a Collection of
+     * user profile records. It seems like this function is designed to validate the limit of a
+     * specific type of profile for a user. The function checks the number of existing profiles of a
+     * certain type for a user and compares it against the predefined limit
+     * @param string profile_type The `validateProfileTypeLimit` function you provided is used to check
+     * if a user has reached the limit for a specific profile type. The function takes a collection of
+     * user profiles and a profile type as parameters.
+     */
+    public static function validateProfileTypeLimit(Collection $user_profiles, string $profile_type): void
+    {
+        $profile_type_limits = [
+            'biography' => [
+                'max_records' => 1,
+                'message' => 'Ya existe una biografía asignada al usuario'
+            ],
+            'achievements' => [
+                'max_records' => 3,
+                'message' => 'El usuario alcanzo el máximo de logros asignados'
+            ],
+            'hobbies' => [
+                'max_records' => 3,
+                'message' => 'El usuario alcanzo el máximo de hobbies asignados'
+            ]
+        ];
+
+        if (!array_key_exists($profile_type, $profile_type_limits)) {
+            throw new HttpResponseException(response()->json([
+                'message' => "Tipo de información no reconocido: {$profile_type}"
+            ], 422));
+        }
+
+        $limit = $profile_type_limits[$profile_type]['max_records'];
+        $type_count = $user_profiles->where('type', $profile_type)->count();
+
+        if(!$user_profiles->isEmpty() && $type_count >= $limit) {
+            throw new HttpResponseException(response()->json([
+                'message' => $profile_type_limits[$profile_type]['message']
+            ], 422));
+        }
+    }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\{
     AuthController,
     InfoController,
     UserController,
+    UserProfileController,
     ContentController,
     EventController,
     NoticeController,
@@ -46,6 +47,12 @@ Route::prefix('v1/')->group(function () {
         Route::put('upload-image-profile', 'uploadImageProfile')->middleware('jwt.verify');
         Route::delete('{user_id}', 'delete')->middleware('jwt.verify');
     });
+
+    Route::prefix('users-profile/')->controller(UserProfileController::class)->group(function () {
+        Route::post('', 'assignProfileInfo');
+        Route::put('{id}', 'updateProfileInfo');
+    });
+
 
     Route::prefix('password/')->controller(PasswordController::class)->group(function () {
         Route::post('email', 'generateToken');
