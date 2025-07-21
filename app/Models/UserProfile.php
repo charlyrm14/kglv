@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class UserProfile extends Model
 {
@@ -55,5 +56,20 @@ class UserProfile extends Model
     public function scopeByUserId(Builder $query, int $user_id): void
     {
         $query->where('user_id', $user_id);
+    }
+
+    
+    /**
+     * This PHP function retrieves users who are part of a team along with their profiles filtered by
+     * hobbies.
+     *
+     * @return Collection A collection of users who are part of a team, with their profiles filtered to
+     * only include hobbies.
+     */
+    public static function usersTeam(): Collection
+    {
+        return static::with(['user.profile' => function ($query) {
+            $query->where('type', 'hobbies');
+        }])->where('type', 'team')->get();
     }
 }
