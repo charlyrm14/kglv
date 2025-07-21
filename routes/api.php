@@ -41,6 +41,7 @@ Route::prefix('v1/')->group(function () {
         Route::put('', 'update')->middleware('jwt.verify');
         Route::put('upload-image-profile', 'uploadImageProfile')->middleware('jwt.verify');
         Route::delete('{user_id}', 'delete')->middleware('jwt.verify');
+        Route::get('list/team', 'usersTeam');
     });
 
     Route::prefix('users-profile/')->controller(UserProfileController::class)->group(function () {

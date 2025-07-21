@@ -17,6 +17,7 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Services\UserService;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Http\Requests\UpdateProfileImageRequest;
+use App\Models\UserProfile;
 
 class UserController extends Controller
 {
@@ -351,5 +352,35 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Usuario eliminado con éxito'
         ], 200);
+    }
+
+    /**
+     * This PHP function retrieves a list of users belonging to a team and returns it as a JSON
+     * response, handling potential errors along the way.
+     *
+     * @return JsonResponse The `usersTeam()` function is returning a JSON response. If the function
+     * successfully retrieves user profiles, it will return a JSON response with the user data in the
+     * 'data' key and a status code of 200. If no user profiles are found, it will return a JSON
+     * response with a message indicating no results and a status code of 404. If an exception occurs
+     * during the process, it
+     */
+    public function usersTeam(): JsonResponse
+    {
+        try {
+            
+            $users = UserProfile::usersTeam();
+
+            if($users->isEmpty()) {
+                return response()->json(['message' => 'No se encontraron resultados'], 404);
+            }
+
+            return response()->json([
+                'data' => $users
+            ], 200);
+
+        } catch (\Exception $e) {
+
+            return response()->json(["error" => $e->getMessage()], 500);
+        }
     }
 }
